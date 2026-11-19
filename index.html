@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#047857">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="COD Cash Counter">
+    <meta name="application-name" content="COD Cash Counter">
+    <meta name="description" content="Offline-ready Cash & Online COD Denomination Counter with Settlement & Quick Calculator">
+    <link id="dynamic-manifest" rel="manifest">
+    <link id="apple-touch-icon" rel="apple-touch-icon">
+    <link id="favicon-link" rel="icon" type="image/png">
+    <title>COD Cash Counter</title>
+    <style>
+        /* Reset & Base Typography */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --emerald-50: #ecfdf5;
+            --emerald-100: #d1fae5;
+            --emerald-500: #10b981;
+            --emerald-600: #059669;
+            --emerald-700: #047857;
+            --emerald-800: #065f46;
+            --slate-50: #f1f5f9;
+            --slate-100: #e2e8f0;
+            --slate-200: #cbd5e1;
+            --slate-300: #94a3b8;
+            --slate-400: #64748b;
+            --slate-500: #475569;
+            --slate-600: #334155;
+            --slate-700: #1e293b;
+            --slate-800: #0f172a;
+            --blue-50: #eff6ff;
+            --blue-100: #dbeafe;
+            --blue-600: #2563eb;
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--slate-50);
+            color: var(--slate-700);
+            line-height: 1.4;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        svg {
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        /* Hide Number Spinners */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--slate-200);
+            border-radius: 999px;
+        }
+
+        /* Top Header */
+        .app-header {
+            background-color: #065f46;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+        .header-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6ee7b7;
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+        .brand-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-install-app {
+            background: #ffffff;
+            color: #065f46;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .btn-install-app:hover {
+            background: var(--emerald-50);
+        }
+        .btn-clear-form {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .btn-clear-form:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 3-Column Main Layout — Compact & Balanced across all screen sizes */
+        .main-container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px 20px;
+            display: grid;
+            grid-template-columns: 330px 320px 1fr;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 1100px) {
+            .main-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            .right-column {
+                grid-column: span 2;
+            }
+        }
+        @media (max-width: 740px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+            .right-column {
+                grid-column: span 1;
+            }
+        }
+
+        /* Card Component */
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* COLUMN 1: Client, Bill & Denomination Rows (Tight, Even Gaps) */
+        .col1-top {
+            padding: 14px 16px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            display: grid;
+            grid-template-columns: 1fr 125px;
+            gap: 10px;
+        }
+        .field-label {
+            display: block;
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 5px;
+        }
+        .text-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: #1e293b;
+            background: #ffffff;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .text-input:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
+        }
+        .bill-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .bill-prefix {
+            position: absolute;
+            left: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #94a3b8;
+            pointer-events: none;
+        }
+        .bill-input {
+            padding-left: 22px;
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .denom-list {
+            padding: 12px 16px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .denom-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .denom-row:focus-within {
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.12);
+        }
+        .denom-label {
+            width: 48px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 0.86rem;
+            color: #334155;
+        }
+        .denom-times {
+            color: #94a3b8;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .denom-input {
+            flex: 1;
+            min-width: 0;
+            background: #f1f5f9;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 5px 6px;
+            text-align: center;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #0f172a;
+            outline: none;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .denom-input:focus {
+            background: #ffffff;
+            border-color: #10b981;
+        }
+        .denom-input::placeholder {
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        .denom-subtotal {
+            width: 76px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 0.86rem;
+            color: #047857;
+            white-space: nowrap;
+        }
+
+        /* COLUMN 2: Collection & Settlement */
+        .settlement-card {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .section-title-icon {
+            color: #059669;
+            display: flex;
+            align-items: center;
+        }
+
+        .online-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 9px 12px;
+            margin-bottom: 12px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .online-box:focus-within {
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .online-left {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+        .online-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            background: #dbeafe;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .online-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1e293b;
+        }
+        .online-right {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .rupee-prefix {
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+        .online-input {
+            width: 105px;
+            border: none;
+            background: transparent;
+            text-align: right;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+            outline: none;
+        }
+        .online-input::placeholder {
+            color: #94a3b8;
+        }
+
+        /* Totals Gray Box */
+        .totals-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+        }
+        .totals-split-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            color: #64748b;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .totals-split-row strong.cash-val {
+            color: #0f172a;
+            font-weight: 800;
+        }
+        .totals-split-row strong.online-val {
+            color: #2563eb;
+            font-weight: 800;
+        }
+        .grand-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-top: 10px;
+        }
+        .grand-total-label {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .grand-total-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #047857;
+            letter-spacing: -0.02em;
+        }
+
+        /* Balance Due / Excess / Settled Box */
+        .balance-box {
+            border-radius: 10px;
+            padding: 11px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+            transition: all 0.15s ease;
+        }
+        .balance-box.short {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+        .balance-box.excess {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+        }
+        .balance-box.settled {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .balance-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .balance-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+        .balance-box.short .balance-title,
+        .balance-box.short .balance-amount {
+            color: #dc2626;
+        }
+        .balance-box.excess .balance-title,
+        .balance-box.excess .balance-amount {
+            color: #059669;
+        }
+        .balance-box.settled .balance-title,
+        .balance-box.settled .balance-amount {
+            color: #475569;
+        }
+        .balance-sub {
+            font-size: 0.72rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .balance-amount {
+            font-size: 1.2rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .btn-save {
+            margin-top: auto;
+            width: 100%;
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 0.94rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.22);
+            transition: filter 0.15s ease, transform 0.1s ease;
+        }
+        .btn-save:hover {
+            filter: brightness(0.96);
+        }
+        .btn-save:active {
+            transform: scale(0.99);
+        }
+
+        /* COLUMN 3: Saved Entries + Quick Calculator */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-width: 0;
+        }
+
+        /* Top Right: Saved Entries Card (Balanced height with Column 1 & 2) */
+        .history-card {
+            flex: 1;
+            min-height: 220px;
+            max-height: 295px;
+        }
+        .card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+        }
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .entry-count-badge {
+            background: #d1fae5;
+            color: #065f46;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 1px 7px;
+            border-radius: 999px;
+            margin-left: 2px;
+        }
+        .btn-clear-history {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .btn-clear-history:hover {
+            background: #fef2f2;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        .history-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px;
+            background: #ffffff;
+        }
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+        .history-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 9px 13px;
+            animation: slideIn 0.18s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-3px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .history-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .entry-user-line {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .entry-user-name {
+            font-weight: 800;
+            font-size: 0.86rem;
+            color: #0f172a;
+        }
+        .entry-time {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        .btn-delete-entry {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 5px;
+            font-size: 0.88rem;
+            line-height: 1;
+        }
+        .btn-delete-entry:hover {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+
+        .history-item-mid {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+        .entry-inline-splits {
+            font-size: 0.78rem;
+            color: #475569;
+            font-weight: 600;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .entry-inline-splits strong.cash {
+            color: #0f172a;
+        }
+        .entry-inline-splits strong.online {
+            color: #2563eb;
+        }
+        .entry-inline-splits strong.short {
+            color: #dc2626;
+        }
+        .entry-grand {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #047857;
+            white-space: nowrap;
+        }
+        .entry-breakdown {
+            font-size: 0.72rem;
+            color: #64748b;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .empty-state {
+            height: 100%;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            text-align: center;
+            padding: 12px;
+        }
+        .empty-state-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 6px;
+        }
+        .empty-state-sub {
+            font-size: 0.74rem;
+            margin-top: 2px;
+        }
+
+        /* Bottom Right: Quick Calculator */
+        .calc-card {
+            background: #ffffff;
+        }
+        .calc-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .btn-use-calc {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.73rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .btn-use-calc:hover {
+            background: #dbeafe;
+        }
+        .btn-use-bill {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #d1fae5;
+        }
+        .btn-use-bill:hover {
+            background: #d1fae5;
+        }
+
+        .calc-body {
+            padding: 12px 16px 14px;
+            display: grid;
+            grid-template-columns: 1fr 230px;
+            gap: 12px;
+            align-items: stretch;
+        }
+        @media (max-width: 640px) {
+            .calc-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Calculator Output Window */
+        .calc-display-box {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 11px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: text;
+            border: 2px solid #1e293b;
+            transition: border-color 0.15s ease;
+            min-height: 110px;
+        }
+        .calc-display-box:focus-within {
+            border-color: #10b981;
+        }
+        .calc-expr-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .calc-badge {
+            font-size: 0.62rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.14);
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+        .calc-history-line {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            text-align: right;
+            min-height: 16px;
+            word-break: break-all;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+        .calc-input-field {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: right;
+            outline: none;
+            margin-top: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+        .calc-input-field::placeholder {
+            color: #475569;
+        }
+        .calc-live-preview {
+            font-size: 0.82rem;
+            color: #6ee7b7;
+            text-align: right;
+            font-weight: 600;
+            min-height: 16px;
+            margin-top: 2px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+
+        /* Operator-Only Keypad */
+        .operator-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .op-btn {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 7px 4px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1e293b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.12s ease, transform 0.08s ease;
+            user-select: none;
+        }
+        .op-btn:hover {
+            background: #e2e8f0;
+        }
+        .op-btn:active {
+            transform: scale(0.95);
+        }
+        .op-btn-symbol {
+            background: #ecfdf5;
+            border-color: #d1fae5;
+            color: #065f46;
+        }
+        .op-btn-symbol:hover {
+            background: #d1fae5;
+        }
+        .op-btn-danger {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+            font-size: 0.86rem;
+        }
+        .op-btn-danger:hover {
+            background: #fee2e2;
+        }
+        .op-btn-equals {
+            grid-column: span 2;
+            background: #059669;
+            border-color: #059669;
+            color: #ffffff;
+            font-size: 1.12rem;
+        }
+        .op-btn-equals:hover {
+            background: #047857;
+        }
+
+        /* Modals */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 50;
+        }
+        .modal-backdrop.open {
+            display: flex;
+        }
+        .modal-box {
+            background: #ffffff;
+            border-radius: 14px;
+            width: 100%;
+            max-width: 370px;
+            padding: 20px;
+            box-shadow: 0 20px 35px rgba(15, 23, 42, 0.2);
+            animation: slideIn 0.18s ease-out;
+        }
+        .modal-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 5px;
+        }
+        .modal-desc {
+            font-size: 0.84rem;
+            color: #64748b;
+            margin-bottom: 14px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .btn-modal-cancel {
+            flex: 1;
+            padding: 9px;
+            border-radius: 9px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-modal-confirm {
+            flex: 1;
+            padding: 9px;
+            border-radius: 9px;
+            border: none;
+            background: #059669;
+            color: #ffffff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-modal-danger {
+            flex: 1;
+            padding: 9px;
+            border-radius: 9px;
+            border: none;
+            background: #dc2626;
+            color: #ffffff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .input-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+        }
+
+        .install-steps {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.82rem;
+            color: #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(16px);
+            background: #0f172a;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.22s ease, transform 0.22s ease;
+            z-index: 60;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Emerald Header -->
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand">
+                <div class="brand-icon">₹</div>
+                <h1 class="brand-title">COD Cash Counter</h1>
+            </div>
+            <div class="header-actions">
+                <button type="button" id="install-app-btn" class="btn-install-app" onclick="handleInstallClick()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Install App</span>
+                </button>
+                <button type="button" class="btn-clear-form" onclick="clearForm()">Clear Form</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main 3-Column Container -->
+    <main class="main-container">
+        
+        <!-- COLUMN 1: Client Name + To Collect (Bill) + Denominations -->
+        <section class="card">
+            <div class="col1-top">
+                <div>
+                    <label for="entry-name" class="field-label">Client / Sender Name</label>
+                    <input type="text" id="entry-name" class="text-input" placeholder="e.g., John Doe" autocomplete="off">
+                </div>
+                <div>
+                    <label for="bill-amount" class="field-label">To Collect (Bill)</label>
+                    <div class="bill-input-wrap">
+                        <span class="bill-prefix">₹</span>
+                        <input type="number" inputmode="decimal" step="0.01" min="0" onwheel="this.blur()" id="bill-amount" class="text-input bill-input" placeholder="0" oninput="handleBillInput(this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Denominations List (₹500 down to ₹1) -->
+            <div class="denom-list" id="denom-list"></div>
+        </section>
+
+        <!-- COLUMN 2: Collection & Settlement -->
+        <section class="card settlement-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="section-title-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
+                    </span>
+                    <span>COLLECTION & SETTLEMENT</span>
+                </div>
+            </div>
+
+            <!-- Online Amount Box -->
+            <div class="online-box">
+                <div class="online-left">
+                    <div class="online-badge">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                    <span class="online-title">Online</span>
+                </div>
+                <div class="online-right">
+                    <span class="rupee-prefix">₹</span>
+                    <input type="number" inputmode="decimal" step="0.01" min="0" onwheel="this.blur()" id="online-amount" class="online-input" placeholder="0" oninput="handleOnlineInput(this.value)">
+                </div>
+            </div>
+
+            <!-- Cash, Online & Grand Total Received Box -->
+            <div class="totals-box">
+                <div class="totals-split-row">
+                    <span>Cash: <strong class="cash-val" id="cash-total-display">₹0</strong></span>
+                    <span>Online: <strong class="online-val" id="online-total-display">₹0</strong></span>
+                </div>
+                <div class="grand-total-row">
+                    <span class="grand-total-label">Grand Total (Received)</span>
+                    <span class="grand-total-value" id="grand-total-display">₹0</span>
+                </div>
+            </div>
+
+            <!-- Dynamic Balance Due (Short) / Excess / Settled Box -->
+            <div id="balance-box" class="balance-box settled">
+                <div class="balance-info">
+                    <div id="balance-title" class="balance-title">Balance Due</div>
+                    <div id="balance-sub" class="balance-sub">Bill: ₹0 | Recv: ₹0</div>
+                </div>
+                <div id="balance-amount" class="balance-amount">₹0</div>
+            </div>
+
+            <!-- Save Entry Button anchored at bottom -->
+            <button type="button" class="btn-save" onclick="openSaveModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                    <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                <span>Save Entry</span>
+            </button>
+        </section>
+
+        <!-- COLUMN 3: Saved Entries + Quick Calculator -->
+        <div class="right-column">
+            
+            <!-- Top Right Card: Saved Entries -->
+            <section class="card history-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="section-title-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="9"></circle>
+                                <polyline points="12 7 12 12 15 14"></polyline>
+                            </svg>
+                        </span>
+                        <span>Saved Entries</span>
+                        <span id="entry-count-badge" class="entry-count-badge">0</span>
+                    </div>
+                    <button type="button" id="clear-history-btn" class="btn-clear-history hidden" onclick="openClearHistoryModal()">
+                        Clear All
+                    </button>
+                </div>
+
+                <div class="history-body">
+                    <div id="history-list" class="history-list"></div>
+                    <div id="empty-history" class="empty-state">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                            <line x1="7" y1="9" x2="17" y2="9"></line>
+                            <line x1="7" y1="13" x2="13" y2="13"></line>
+                        </svg>
+                        <div class="empty-state-title">No entries saved yet</div>
+                        <div class="empty-state-sub">Count your cash and click Save Entry.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Right Card: Quick Calculator -->
+            <section class="card calc-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="section-title-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                                <line x1="8" y1="6" x2="16" y2="6"></line>
+                                <line x1="8" y1="11" x2="8" y2="11"></line>
+                                <line x1="12" y1="11" x2="12" y2="11"></line>
+                                <line x1="16" y1="11" x2="16" y2="11"></line>
+                                <line x1="8" y1="15" x2="8" y2="15"></line>
+                                <line x1="12" y1="15" x2="12" y2="15"></line>
+                                <line x1="16" y1="15" x2="16" y2="15"></line>
+                            </svg>
+                        </span>
+                        <span>Quick Calculator</span>
+                    </div>
+                    <div class="calc-header-actions">
+                        <button type="button" class="btn-use-calc" onclick="copyCalcToOnline()" title="Copy calculator result to Online payment field">
+                            Use in Online
+                        </button>
+                        <button type="button" class="btn-use-calc btn-use-bill" onclick="copyCalcToBill()" title="Copy calculator result to To Collect (Bill) field">
+                            Use in Bill
+                        </button>
+                    </div>
+                </div>
+
+                <div class="calc-body">
+                    <!-- Output Window -->
+                    <div class="calc-display-box" onclick="focusCalcInput()">
+                        <div class="calc-expr-row">
+                            <span class="calc-badge">OUTPUT</span>
+                            <div id="calc-history-line" class="calc-history-line"></div>
+                        </div>
+                        <input type="text" id="calc-input" inputmode="decimal" class="calc-input-field" placeholder="0" autocomplete="off" spellcheck="false">
+                        <div id="calc-live-preview" class="calc-live-preview"></div>
+                    </div>
+
+                    <!-- Operator-Only Keypad -->
+                    <div class="operator-grid">
+                        <button type="button" class="op-btn op-btn-danger" onclick="clearCalc()" title="Clear (Esc)">C</button>
+                        <button type="button" class="op-btn" onclick="backspaceCalc()" title="Backspace">⌫</button>
+                        <button type="button" class="op-btn op-btn-symbol" onclick="applyPercent()" title="Percent (%)">%</button>
+                        <button type="button" class="op-btn op-btn-symbol" onclick="appendCalcOp('÷')" title="Divide (/)">÷</button>
+
+                        <button type="button" class="op-btn op-btn-symbol" onclick="applySquareRoot()" title="Square Root">√</button>
+                        <button type="button" class="op-btn op-btn-symbol" onclick="appendCalcOp('×')" title="Multiply (*)">×</button>
+                        <button type="button" class="op-btn op-btn-symbol" onclick="appendCalcOp('-')" title="Subtract (-)">−</button>
+                        <button type="button" class="op-btn op-btn-symbol" onclick="appendCalcOp('+')" title="Add (+)">+</button>
+
+                        <button type="button" class="op-btn" onclick="appendCalcText('00')" title="Double Zero">00</button>
+                        <button type="button" class="op-btn" onclick="appendCalcText('.')" title="Decimal Point">.</button>
+                        <button type="button" class="op-btn op-btn-equals" onclick="evaluateCalc()" title="Calculate (Enter)">=</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Save With Name Modal -->
+    <div id="save-modal" class="modal-backdrop" onclick="if(event.target === this) closeSaveModal()">
+        <div class="modal-box">
+            <h3 class="modal-title">Save Entry</h3>
+            <p class="modal-desc">Confirm or enter the client/sender name for this <strong id="modal-total-badge">₹0</strong> entry.</p>
+            <input type="text" id="modal-name-input" class="text-input" placeholder="Enter name (e.g., John Doe)" autocomplete="off">
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-cancel" onclick="closeSaveModal()">Cancel</button>
+                <button type="button" class="btn-modal-confirm" onclick="confirmSaveEntry()">Save Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear All History Modal -->
+    <div id="clear-modal" class="modal-backdrop" onclick="if(event.target === this) closeClearHistoryModal()">
+        <div class="modal-box">
+            <h3 class="modal-title">Clear All History?</h3>
+            <p class="modal-desc">This will permanently remove all saved COD entries from this device.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-cancel" onclick="closeClearHistoryModal()">Cancel</button>
+                <button type="button" class="btn-modal-danger" onclick="executeClearHistory()">Delete All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Install App Fallback Instructions Modal -->
+    <div id="install-modal" class="modal-backdrop" onclick="if(event.target === this) closeInstallModal()">
+        <div class="modal-box">
+            <h3 class="modal-title">Install COD Cash Counter</h3>
+            <p class="modal-desc">Install this app on your phone or computer for full-screen access and offline use:</p>
+            <div class="install-steps">
+                <div><strong>1. Android / Chrome / Edge:</strong> Tap the browser menu (<strong>⋮</strong>) and choose <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</div>
+                <div><strong>2. iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> icon at the bottom and tap <strong>"Add to Home Screen"</strong>.</div>
+                <div><strong>3. Desktop (Chrome / Edge):</strong> Click the <strong>Install icon</strong> on the right side of the address bar.</div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-confirm" onclick="closeInstallModal()">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span id="toast-msg">Entry Saved!</span>
+    </div>
+
+    <script>
+        /* =========================================================
+           1. CASH, BILL & ONLINE DENOMINATION COUNTER LOGIC
+           ========================================================= */
+        const DENOMINATIONS = [500, 200, 100, 50, 20, 10, 5, 2, 1];
+        const STORAGE_KEY = 'codCashCounterHistory_v2';
+
+        let counts = {};
+        let billAmount = 0;
+        let onlineAmount = 0;
+        let cashTotal = 0;
+        let grandTotal = 0;
+        let history = [];
+
+        function formatINR(amount) {
+            return new Intl.NumberFormat('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        function initDenominationRows() {
+            const listEl = document.getElementById('denom-list');
+            listEl.innerHTML = '';
+
+            DENOMINATIONS.forEach((denom, index) => {
+                counts[denom] = 0;
+
+                const row = document.createElement('div');
+                row.className = 'denom-row';
+                row.innerHTML = `
+                    <div class="denom-label">₹ ${denom}</div>
+                    <div class="denom-times">×</div>
+                    <input
+                        type="number"
+                        inputmode="numeric"
+                        min="0"
+                        onwheel="this.blur()"
+                        id="denom-input-${denom}"
+                        data-index="${index}"
+                        class="denom-input"
+                        placeholder="0"
+                        oninput="handleCashInput(${denom}, this.value)"
+                    >
+                    <div class="denom-subtotal" id="denom-sub-${denom}">₹0</div>
+                `;
+                listEl.appendChild(row);
+
+                const inputEl = row.querySelector('input');
+                inputEl.addEventListener('keydown', (e) => handleDenomKeyNav(e, index));
+            });
+
+            // Navigation from Bill input down to ₹500
+            const billInput = document.getElementById('bill-amount');
+            billInput.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                    e.preventDefault();
+                    const firstInput = document.getElementById(`denom-input-${DENOMINATIONS[0]}`);
+                    if (firstInput) {
+                        firstInput.focus();
+                        firstInput.select();
+                    }
+                }
+            });
+
+            // Navigation from Online input up to ₹1
+            const onlineInput = document.getElementById('online-amount');
+            onlineInput.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    const lastDenom = DENOMINATIONS[DENOMINATIONS.length - 1];
+                    const target = document.getElementById(`denom-input-${lastDenom}`);
+                    if (target) {
+                        target.focus();
+                        target.select();
+                    }
+                }
+            });
+        }
+
+        function handleDenomKeyNav(e, index) {
+            if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                e.preventDefault();
+                if (index + 1 < DENOMINATIONS.length) {
+                    const nextDenom = DENOMINATIONS[index + 1];
+                    const nextInput = document.getElementById(`denom-input-${nextDenom}`);
+                    if (nextInput) {
+                        nextInput.focus();
+                        nextInput.select();
+                    }
+                } else {
+                    const onlineInput = document.getElementById('online-amount');
+                    if (onlineInput) {
+                        onlineInput.focus();
+                        onlineInput.select();
+                    }
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (index - 1 >= 0) {
+                    const prevDenom = DENOMINATIONS[index - 1];
+                    const prevInput = document.getElementById(`denom-input-${prevDenom}`);
+                    if (prevInput) {
+                        prevInput.focus();
+                        prevInput.select();
+                    }
+                } else {
+                    const billInput = document.getElementById('bill-amount');
+                    if (billInput) {
+                        billInput.focus();
+                        billInput.select();
+                    }
+                }
+            }
+        }
+
+        function handleCashInput(denom, rawValue) {
+            let qty = parseInt(rawValue, 10);
+            if (isNaN(qty) || qty < 0) qty = 0;
+            counts[denom] = qty;
+
+            const sub = qty * denom;
+            document.getElementById(`denom-sub-${denom}`).textContent = formatINR(sub);
+            recalculateTotals();
+        }
+
+        function handleBillInput(rawValue) {
+            let val = parseFloat(rawValue);
+            if (isNaN(val) || val < 0) val = 0;
+            billAmount = val;
+            recalculateTotals();
+        }
+
+        function handleOnlineInput(rawValue) {
+            let val = parseFloat(rawValue);
+            if (isNaN(val) || val < 0) val = 0;
+            onlineAmount = val;
+            recalculateTotals();
+        }
+
+        function recalculateTotals() {
+            cashTotal = DENOMINATIONS.reduce((acc, d) => acc + (counts[d] * d), 0);
+            grandTotal = Math.round((cashTotal + onlineAmount) * 100) / 100;
+
+            document.getElementById('cash-total-display').textContent = formatINR(cashTotal);
+            document.getElementById('online-total-display').textContent = formatINR(onlineAmount);
+            document.getElementById('grand-total-display').textContent = formatINR(grandTotal);
+
+            // Update Balance Due (Short) / Excess / Settled Box
+            const balanceBox = document.getElementById('balance-box');
+            const balanceTitle = document.getElementById('balance-title');
+            const balanceSub = document.getElementById('balance-sub');
+            const balanceAmt = document.getElementById('balance-amount');
+
+            balanceSub.textContent = `Bill: ${formatINR(billAmount)} | Recv: ${formatINR(grandTotal)}`;
+
+            const diff = Math.round((billAmount - grandTotal) * 100) / 100;
+
+            if (billAmount > 0 && diff > 0) {
+                balanceBox.className = 'balance-box short';
+                balanceTitle.textContent = 'Balance Due (Short)';
+                balanceAmt.textContent = formatINR(diff);
+            } else if (billAmount > 0 && diff < 0) {
+                balanceBox.className = 'balance-box excess';
+                balanceTitle.textContent = 'Excess (Change to Return)';
+                balanceAmt.textContent = formatINR(Math.abs(diff));
+            } else if (billAmount > 0 && diff === 0) {
+                balanceBox.className = 'balance-box excess';
+                balanceTitle.textContent = 'Exact Match (Settled)';
+                balanceAmt.textContent = '₹0';
+            } else {
+                balanceBox.className = 'balance-box settled';
+                balanceTitle.textContent = 'Balance Due';
+                balanceAmt.textContent = '₹0';
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('entry-name').value = '';
+            document.getElementById('bill-amount').value = '';
+            document.getElementById('online-amount').value = '';
+            billAmount = 0;
+            onlineAmount = 0;
+
+            DENOMINATIONS.forEach(d => {
+                counts[d] = 0;
+                const inp = document.getElementById(`denom-input-${d}`);
+                if (inp) inp.value = '';
+                const sub = document.getElementById(`denom-sub-${d}`);
+                if (sub) sub.textContent = '₹0';
+            });
+
+            recalculateTotals();
+            showToast('Form cleared');
+        }
+
+        /* =========================================================
+           2. SAVE WITH NAME MODAL & SAVED ENTRIES HISTORY
+           ========================================================= */
+        function openSaveModal() {
+            if (grandTotal <= 0 && billAmount <= 0) {
+                showToast('Enter cash, online, or bill amount first');
+                return;
+            }
+
+            const existingName = document.getElementById('entry-name').value.trim();
+            const modal = document.getElementById('save-modal');
+            const modalInput = document.getElementById('modal-name-input');
+            const badge = document.getElementById('modal-total-badge');
+
+            badge.textContent = formatINR(grandTotal);
+            modalInput.value = existingName;
+            modalInput.classList.remove('input-error');
+
+            modal.classList.add('open');
+            setTimeout(() => {
+                modalInput.focus();
+                modalInput.select();
+            }, 30);
+        }
+
+        function closeSaveModal() {
+            document.getElementById('save-modal').classList.remove('open');
+        }
+
+        function confirmSaveEntry() {
+            const modalInput = document.getElementById('modal-name-input');
+            const name = modalInput.value.trim();
+
+            if (!name) {
+                modalInput.classList.add('input-error');
+                modalInput.focus();
+                return;
+            }
+
+            const breakdown = {};
+            [...DENOMINATIONS].reverse().forEach(d => {
+                if (counts[d] > 0) breakdown[d] = counts[d];
+            });
+
+            const now = new Date();
+            const formattedTime = now.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short'
+            }) + ', ' + now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            }).toLowerCase();
+
+            const entry = {
+                id: Date.now(),
+                name: name,
+                timestamp: formattedTime,
+                billTotal: billAmount,
+                cashTotal: cashTotal,
+                onlineTotal: onlineAmount,
+                grandTotal: grandTotal,
+                breakdown: breakdown
+            };
+
+            history.unshift(entry);
+            saveHistoryToStorage();
+            renderHistory();
+            closeSaveModal();
+            clearForm();
+            showToast(`Saved entry for ${name}`);
+        }
+
+        document.getElementById('modal-name-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmSaveEntry();
+            } else if (e.key === 'Escape') {
+                closeSaveModal();
+            }
+        });
+
+        function loadHistoryFromStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                history = raw ? JSON.parse(raw) : [];
+            } catch (err) {
+                history = [];
+            }
+            renderHistory();
+        }
+
+        function saveHistoryToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+            } catch (err) {}
+        }
+
+        function deleteEntry(id) {
+            history = history.filter(item => item.id !== id);
+            saveHistoryToStorage();
+            renderHistory();
+            showToast('Entry removed');
+        }
+
+        function openClearHistoryModal() {
+            document.getElementById('clear-modal').classList.add('open');
+        }
+
+        function closeClearHistoryModal() {
+            document.getElementById('clear-modal').classList.remove('open');
+        }
+
+        function executeClearHistory() {
+            history = [];
+            saveHistoryToStorage();
+            renderHistory();
+            closeClearHistoryModal();
+            showToast('All history cleared');
+        }
+
+        function escapeHTML(str) {
+            return String(str).replace(/[&<>"']/g, (m) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[m]));
+        }
+
+        function renderHistory() {
+            const listEl = document.getElementById('history-list');
+            const emptyEl = document.getElementById('empty-history');
+            const clearBtn = document.getElementById('clear-history-btn');
+            const countBadge = document.getElementById('entry-count-badge');
+
+            listEl.innerHTML = '';
+            countBadge.textContent = history.length;
+
+            if (history.length === 0) {
+                emptyEl.classList.remove('hidden');
+                clearBtn.classList.add('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            clearBtn.classList.remove('hidden');
+
+            history.forEach(item => {
+                const notesList = Object.entries(item.breakdown || {})
+                    .map(([denom, qty]) => `${qty}×₹${denom}`)
+                    .join(', ');
+                const breakdownText = notesList || (item.cashTotal > 0 ? 'Cash' : 'Online Only');
+
+                let diffBadge = '';
+                if (item.billTotal && item.billTotal > 0) {
+                    const diff = Math.round((item.billTotal - item.grandTotal) * 100) / 100;
+                    if (diff > 0) {
+                        diffBadge = `<span>Short: <strong class="short">${formatINR(diff)}</strong></span>`;
+                    }
+                }
+
+                const card = document.createElement('div');
+                card.className = 'history-item';
+                card.innerHTML = `
+                    <div class="history-item-top">
+                        <div class="entry-user-line">
+                            <span class="entry-user-name">${escapeHTML(item.name)}</span>
+                            <span class="entry-time">${escapeHTML(item.timestamp)}</span>
+                        </div>
+                        <button type="button" class="btn-delete-entry" onclick="deleteEntry(${item.id})" title="Delete entry">✕</button>
+                    </div>
+                    <div class="history-item-mid">
+                        <div class="entry-inline-splits">
+                            <span>Cash: <strong class="cash">${formatINR(item.cashTotal)}</strong></span>
+                            <span>Online: <strong class="online">${formatINR(item.onlineTotal)}</strong></span>
+                            ${diffBadge}
+                        </div>
+                        <div class="entry-grand">${formatINR(item.grandTotal)}</div>
+                    </div>
+                    <div class="entry-breakdown" title="${escapeHTML(breakdownText)}">${escapeHTML(breakdownText)}</div>
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        /* =========================================================
+           3. OPERATOR-ONLY QUICK CALCULATOR + OUTPUT WINDOW
+           ========================================================= */
+        const calcInput = document.getElementById('calc-input');
+        const calcHistoryLine = document.getElementById('calc-history-line');
+        const calcLivePreview = document.getElementById('calc-live-preview');
+
+        function focusCalcInput() {
+            calcInput.focus();
+        }
+
+        function sanitizeExpression(raw) {
+            let expr = raw
+                .replace(/×/g, '*')
+                .replace(/÷/g, '/')
+                .replace(/−/g, '-')
+                .replace(/,/g, '')
+                .replace(/[^0-9+\-*/.%() ]/g, '');
+            return expr.trim();
+        }
+
+        function safeEvalMath(rawExpr) {
+            const cleaned = sanitizeExpression(rawExpr);
+            if (!cleaned) return null;
+
+            const trimmed = cleaned.replace(/[+\-*/.]+$/, '');
+            if (!trimmed) return null;
+
+            const withPercent = trimmed.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
+
+            if (!/^[0-9+\-*/.() ]+$/.test(withPercent)) return null;
+
+            try {
+                const result = Function('"use strict"; return (' + withPercent + ')')();
+                if (typeof result === 'number' && isFinite(result)) {
+                    return Math.round(result * 1000000) / 1000000;
+                }
+            } catch (e) {
+                return null;
+            }
+            return null;
+        }
+
+        function updateCalcLivePreview() {
+            const val = calcInput.value;
+            const res = safeEvalMath(val);
+            if (res !== null && /[+\-*/×÷%]/.test(val)) {
+                calcLivePreview.textContent = '= ' + res.toLocaleString('en-IN');
+            } else {
+                calcLivePreview.textContent = '';
+            }
+        }
+
+        calcInput.addEventListener('input', () => {
+            const pos = calcInput.selectionStart;
+            const formatted = calcInput.value
+                .replace(/\*/g, '×')
+                .replace(/\//g, '÷')
+                .replace(/[^0-9+\-×÷.%() ]/g, '');
+            if (formatted !== calcInput.value) {
+                calcInput.value = formatted;
+                calcInput.setSelectionRange(pos, pos);
+            }
+            updateCalcLivePreview();
+        });
+
+        calcInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === '=') {
+                e.preventDefault();
+                evaluateCalc();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                clearCalc();
+            }
+        });
+
+        function appendCalcOp(op) {
+            let val = calcInput.value.trim();
+            if (!val && op !== '-') return;
+            val = val.replace(/[+\-×÷]+$/, '');
+            calcInput.value = val + op;
+            updateCalcLivePreview();
+            calcInput.focus();
+        }
+
+        function appendCalcText(txt) {
+            calcInput.value += txt;
+            updateCalcLivePreview();
+            calcInput.focus();
+        }
+
+        function backspaceCalc() {
+            calcInput.value = calcInput.value.slice(0, -1);
+            updateCalcLivePreview();
+            calcInput.focus();
+        }
+
+        function clearCalc() {
+            calcInput.value = '';
+            calcHistoryLine.textContent = '';
+            calcLivePreview.textContent = '';
+            calcInput.focus();
+        }
+
+        function applyPercent() {
+            const current = safeEvalMath(calcInput.value);
+            if (current !== null) {
+                const pct = Math.round((current / 100) * 1000000) / 1000000;
+                calcHistoryLine.textContent = `${calcInput.value}% =`;
+                calcInput.value = String(pct);
+                calcLivePreview.textContent = '';
+            }
+            calcInput.focus();
+        }
+
+        function applySquareRoot() {
+            const current = safeEvalMath(calcInput.value);
+            if (current !== null && current >= 0) {
+                const root = Math.round(Math.sqrt(current) * 1000000) / 1000000;
+                calcHistoryLine.textContent = `√(${calcInput.value}) =`;
+                calcInput.value = String(root);
+                calcLivePreview.textContent = '';
+            }
+            calcInput.focus();
+        }
+
+        function evaluateCalc() {
+            const raw = calcInput.value.trim();
+            if (!raw) return;
+
+            const result = safeEvalMath(raw);
+            if (result !== null) {
+                calcHistoryLine.textContent = `${raw} =`;
+                calcInput.value = String(result);
+                calcLivePreview.textContent = '';
+            } else {
+                calcLivePreview.textContent = 'Invalid expression';
+            }
+            calcInput.focus();
+        }
+
+        function copyCalcToOnline() {
+            const result = safeEvalMath(calcInput.value);
+            if (result === null || result < 0) {
+                showToast('Calculate a valid positive amount first');
+                return;
+            }
+            const onlineInput = document.getElementById('online-amount');
+            onlineInput.value = result;
+            handleOnlineInput(result);
+            showToast(`Added ${formatINR(result)} to Online`);
+        }
+
+        function copyCalcToBill() {
+            const result = safeEvalMath(calcInput.value);
+            if (result === null || result < 0) {
+                showToast('Calculate a valid positive amount first');
+                return;
+            }
+            const billInput = document.getElementById('bill-amount');
+            billInput.value = result;
+            handleBillInput(result);
+            showToast(`Added ${formatINR(result)} to Bill`);
+        }
+
+        /* =========================================================
+           4. TOAST & INITIALIZATION
+           ========================================================= */
+        let toastTimer = null;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            msgEl.textContent = message;
+            toast.classList.add('show');
+
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initDenominationRows();
+            loadHistoryFromStorage();
+            recalculateTotals();
+            setupPWA();
+        });
+
+        /* =========================================================
+           5. PROGRESSIVE WEB APP (PWA) MANIFEST, ICONS & SERVICE WORKER
+           ========================================================= */
+        let deferredInstallPrompt = null;
+
+        function generateAppIconDataURL(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            const radius = size * 0.22;
+            ctx.fillStyle = '#047857';
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(167, 243, 208, 0.35)';
+            ctx.lineWidth = Math.max(2, size * 0.03);
+            ctx.beginPath();
+            ctx.arc(size / 2, size / 2, size * 0.36, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${Math.round(size * 0.48)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('₹', size / 2, size * 0.53);
+
+            return canvas.toDataURL('image/png');
+        }
+
+        function setupPWA() {
+            try {
+                const icon192 = generateAppIconDataURL(192);
+                const icon512 = generateAppIconDataURL(512);
+
+                const appleIconLink = document.getElementById('apple-touch-icon');
+                if (appleIconLink) appleIconLink.href = icon192;
+
+                const faviconLink = document.getElementById('favicon-link');
+                if (faviconLink) faviconLink.href = icon192;
+
+                const startUrl = window.location.href.split('#')[0];
+                const manifestObj = {
+                    name: 'COD Cash Counter',
+                    short_name: 'COD Counter',
+                    description: 'Daily COD cash denomination counter and settlement calculator',
+                    start_url: startUrl,
+                    scope: './',
+                    display: 'standalone',
+                    orientation: 'any',
+                    background_color: '#f1f5f9',
+                    theme_color: '#047857',
+                    icons: [
+                        { src: icon192, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+                        { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+                    ]
+                };
+
+                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
+                const manifestURL = URL.createObjectURL(manifestBlob);
+                const manifestLink = document.getElementById('dynamic-manifest');
+                if (manifestLink) manifestLink.href = manifestURL;
+            } catch (err) {}
+
+            if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            }
+
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                const installBtn = document.getElementById('install-app-btn');
+                if (installBtn) installBtn.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            const installBtn = document.getElementById('install-app-btn');
+            if (installBtn) installBtn.classList.remove('hidden');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            const installBtn = document.getElementById('install-app-btn');
+            if (installBtn) installBtn.classList.add('hidden');
+            closeInstallModal();
+            showToast('COD Cash Counter installed!');
+        });
+
+        async function handleInstallClick() {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                const choice = await deferredInstallPrompt.userChoice;
+                if (choice && choice.outcome === 'accepted') {
+                    deferredInstallPrompt = null;
+                }
+            } else {
+                document.getElementById('install-modal').classList.add('open');
+            }
+        }
+
+        function closeInstallModal() {
+            document.getElementById('install-modal').classList.remove('open');
+        }
+    </script>
+</body>
+</html>
