@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="COD Cash Counter">
     <meta name="application-name" content="COD Cash Counter">
-    <meta name="description" content="Offline-ready Cash & Online COD Denomination Counter with Settlement & Quick Calculator">
+    <meta name="description" content="Offline-ready Cash & Online COD Denomination Counter with Settlement, CSV Export & Quick Calculator">
     <link id="dynamic-manifest" rel="manifest">
     <link id="apple-touch-icon" rel="apple-touch-icon">
     <link id="favicon-link" rel="icon" type="image/png">
@@ -164,14 +164,14 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        /* 3-Column Main Layout — Compact & Balanced across all screen sizes */
+        /* 3-Column Main Layout */
         .main-container {
             max-width: 1400px;
             width: 100%;
             margin: 0 auto;
             padding: 16px 20px;
             display: grid;
-            grid-template-columns: 330px 320px 1fr;
+            grid-template-columns: 330px 330px 1fr;
             gap: 16px;
             align-items: stretch;
         }
@@ -205,7 +205,7 @@
             overflow: hidden;
         }
 
-        /* COLUMN 1: Client, Bill & Denomination Rows (Tight, Even Gaps) */
+        /* COLUMN 1: Client, Bill & Denomination Rows */
         .col1-top {
             padding: 14px 16px 12px;
             border-bottom: 1px solid #f1f5f9;
@@ -538,19 +538,21 @@
             min-width: 0;
         }
 
-        /* Top Right: Saved Entries Card (Balanced height with Column 1 & 2) */
+        /* Top Right: Saved Entries Card */
         .history-card {
             flex: 1;
-            min-height: 220px;
-            max-height: 295px;
+            min-height: 250px;
+            max-height: 310px;
         }
         .card-header {
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-bottom: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
             background: #ffffff;
+            flex-wrap: wrap;
         }
         .card-title {
             display: flex;
@@ -569,13 +571,67 @@
             border-radius: 999px;
             margin-left: 2px;
         }
+        .history-actions-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .search-box-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .search-input {
+            width: 145px;
+            padding: 4px 24px 4px 9px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1e293b;
+            background: #f8fafc;
+            outline: none;
+            transition: width 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+        }
+        .search-input:focus {
+            width: 175px;
+            background: #ffffff;
+            border-color: #059669;
+        }
+        .search-clear-btn {
+            position: absolute;
+            right: 5px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            cursor: pointer;
+            padding: 0 3px;
+        }
+        .btn-export-csv {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: background 0.15s ease;
+        }
+        .btn-export-csv:hover {
+            background: #d1fae5;
+        }
         .btn-clear-history {
             background: transparent;
             border: none;
             color: #ef4444;
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            padding: 4px 8px;
+            padding: 4px 7px;
             border-radius: 6px;
             cursor: pointer;
             transition: background 0.15s ease;
@@ -587,22 +643,66 @@
             display: none !important;
         }
 
+        /* Daily / Filtered Summary Strip */
+        .daily-summary-bar {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 7px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 0.74rem;
+        }
+        .summary-chip-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .summary-chip {
+            color: #475569;
+            font-weight: 600;
+        }
+        .summary-chip strong.cash {
+            color: #0f172a;
+            font-weight: 800;
+        }
+        .summary-chip strong.online {
+            color: #2563eb;
+            font-weight: 800;
+        }
+        .summary-chip strong.short {
+            color: #dc2626;
+            font-weight: 800;
+        }
+        .summary-total-pill {
+            background: #d1fae5;
+            color: #065f46;
+            font-weight: 800;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            white-space: nowrap;
+        }
+
         .history-body {
             flex: 1;
             overflow-y: auto;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: #ffffff;
         }
         .history-list {
             display: flex;
             flex-direction: column;
-            gap: 9px;
+            gap: 8px;
         }
         .history-item {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 10px;
-            padding: 9px 13px;
+            padding: 8px 12px;
             animation: slideIn 0.18s ease-out;
         }
         @keyframes slideIn {
@@ -613,7 +713,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
         .entry-user-line {
             display: flex;
@@ -622,11 +722,11 @@
         }
         .entry-user-name {
             font-weight: 800;
-            font-size: 0.86rem;
+            font-size: 0.85rem;
             color: #0f172a;
         }
         .entry-time {
-            font-size: 0.72rem;
+            font-size: 0.71rem;
             color: #94a3b8;
             font-weight: 600;
         }
@@ -637,7 +737,7 @@
             cursor: pointer;
             padding: 2px 5px;
             border-radius: 5px;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
             line-height: 1;
         }
         .btn-delete-entry:hover {
@@ -656,7 +756,7 @@
             color: #475569;
             font-weight: 600;
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .entry-inline-splits strong.cash {
@@ -669,13 +769,13 @@
             color: #dc2626;
         }
         .entry-grand {
-            font-size: 0.95rem;
+            font-size: 0.94rem;
             font-weight: 800;
             color: #047857;
             white-space: nowrap;
         }
         .entry-breakdown {
-            font-size: 0.72rem;
+            font-size: 0.71rem;
             color: #64748b;
             font-weight: 500;
             white-space: nowrap;
@@ -685,7 +785,7 @@
 
         .empty-state {
             height: 100%;
-            min-height: 140px;
+            min-height: 120px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -696,12 +796,12 @@
         }
         .empty-state-title {
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.84rem;
             color: #64748b;
             margin-top: 6px;
         }
         .empty-state-sub {
-            font-size: 0.74rem;
+            font-size: 0.73rem;
             margin-top: 2px;
         }
 
@@ -738,7 +838,7 @@
         }
 
         .calc-body {
-            padding: 12px 16px 14px;
+            padding: 12px 14px 14px;
             display: grid;
             grid-template-columns: 1fr 230px;
             gap: 12px;
@@ -761,7 +861,7 @@
             cursor: text;
             border: 2px solid #1e293b;
             transition: border-color 0.15s ease;
-            min-height: 110px;
+            min-height: 106px;
         }
         .calc-display-box:focus-within {
             border-color: #10b981;
@@ -1095,7 +1195,7 @@
         <!-- COLUMN 3: Saved Entries + Quick Calculator -->
         <div class="right-column">
             
-            <!-- Top Right Card: Saved Entries -->
+            <!-- Top Right Card: Saved Entries with Search, Daily Summary & CSV Export -->
             <section class="card history-card">
                 <div class="card-header">
                     <div class="card-title">
@@ -1108,21 +1208,45 @@
                         <span>Saved Entries</span>
                         <span id="entry-count-badge" class="entry-count-badge">0</span>
                     </div>
-                    <button type="button" id="clear-history-btn" class="btn-clear-history hidden" onclick="openClearHistoryModal()">
-                        Clear All
-                    </button>
+                    <div id="history-actions-bar" class="history-actions-bar hidden">
+                        <div class="search-box-wrap">
+                            <input type="text" id="history-search-input" class="search-input" placeholder="Search name/date..." oninput="handleHistorySearch(this.value)">
+                            <button type="button" id="search-clear-btn" class="search-clear-btn hidden" onclick="clearHistorySearch()" title="Clear search">✕</button>
+                        </div>
+                        <button type="button" class="btn-export-csv" onclick="exportEntriesToCSV()" title="Download saved entries as Excel/CSV">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <span>CSV</span>
+                        </button>
+                        <button type="button" id="clear-history-btn" class="btn-clear-history" onclick="openClearHistoryModal()">
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Summary Totals Strip -->
+                <div id="daily-summary-bar" class="daily-summary-bar hidden">
+                    <div class="summary-chip-group">
+                        <span class="summary-chip">Cash: <strong class="cash" id="sum-cash-display">₹0</strong></span>
+                        <span class="summary-chip">Online: <strong class="online" id="sum-online-display">₹0</strong></span>
+                        <span id="sum-short-wrap" class="summary-chip hidden">Short: <strong class="short" id="sum-short-display">₹0</strong></span>
+                    </div>
+                    <div class="summary-total-pill" id="sum-grand-display">Total: ₹0</div>
                 </div>
 
                 <div class="history-body">
                     <div id="history-list" class="history-list"></div>
                     <div id="empty-history" class="empty-state">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="4" width="18" height="16" rx="2"></rect>
                             <line x1="7" y1="9" x2="17" y2="9"></line>
                             <line x1="7" y1="13" x2="13" y2="13"></line>
                         </svg>
-                        <div class="empty-state-title">No entries saved yet</div>
-                        <div class="empty-state-sub">Count your cash and click Save Entry.</div>
+                        <div class="empty-state-title" id="empty-state-title">No entries saved yet</div>
+                        <div class="empty-state-sub" id="empty-state-sub">Count your cash and click Save Entry.</div>
                     </div>
                 </div>
             </section>
@@ -1250,6 +1374,7 @@
         let cashTotal = 0;
         let grandTotal = 0;
         let history = [];
+        let searchQuery = '';
 
         function formatINR(amount) {
             return new Intl.NumberFormat('en-IN', {
@@ -1291,7 +1416,6 @@
                 inputEl.addEventListener('keydown', (e) => handleDenomKeyNav(e, index));
             });
 
-            // Navigation from Bill input down to ₹500
             const billInput = document.getElementById('bill-amount');
             billInput.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowDown' || e.key === 'Enter') {
@@ -1304,7 +1428,6 @@
                 }
             });
 
-            // Navigation from Online input up to ₹1
             const onlineInput = document.getElementById('online-amount');
             onlineInput.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowUp') {
@@ -1387,7 +1510,6 @@
             document.getElementById('online-total-display').textContent = formatINR(onlineAmount);
             document.getElementById('grand-total-display').textContent = formatINR(grandTotal);
 
-            // Update Balance Due (Short) / Excess / Settled Box
             const balanceBox = document.getElementById('balance-box');
             const balanceTitle = document.getElementById('balance-title');
             const balanceSub = document.getElementById('balance-sub');
@@ -1436,7 +1558,7 @@
         }
 
         /* =========================================================
-           2. SAVE WITH NAME MODAL & SAVED ENTRIES HISTORY
+           2. SAVE WITH NAME MODAL, SEARCH, DAILY SUMMARY & CSV EXPORT
            ========================================================= */
         function openSaveModal() {
             if (grandTotal <= 0 && billAmount <= 0) {
@@ -1482,7 +1604,8 @@
             const now = new Date();
             const formattedTime = now.toLocaleDateString('en-GB', {
                 day: '2-digit',
-                month: 'short'
+                month: 'short',
+                year: 'numeric'
             }) + ', ' + now.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -1550,10 +1673,42 @@
 
         function executeClearHistory() {
             history = [];
+            searchQuery = '';
+            const searchInput = document.getElementById('history-search-input');
+            if (searchInput) searchInput.value = '';
             saveHistoryToStorage();
             renderHistory();
             closeClearHistoryModal();
             showToast('All history cleared');
+        }
+
+        function handleHistorySearch(val) {
+            searchQuery = val.trim().toLowerCase();
+            const clearBtn = document.getElementById('search-clear-btn');
+            if (clearBtn) {
+                clearBtn.classList.toggle('hidden', searchQuery.length === 0);
+            }
+            renderHistory();
+        }
+
+        function clearHistorySearch() {
+            searchQuery = '';
+            const searchInput = document.getElementById('history-search-input');
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+            }
+            document.getElementById('search-clear-btn').classList.add('hidden');
+            renderHistory();
+        }
+
+        function getFilteredHistory() {
+            if (!searchQuery) return history;
+            return history.filter(item => {
+                const nameMatch = (item.name || '').toLowerCase().includes(searchQuery);
+                const timeMatch = (item.timestamp || '').toLowerCase().includes(searchQuery);
+                return nameMatch || timeMatch;
+            });
         }
 
         function escapeHTML(str) {
@@ -1569,22 +1724,71 @@
         function renderHistory() {
             const listEl = document.getElementById('history-list');
             const emptyEl = document.getElementById('empty-history');
-            const clearBtn = document.getElementById('clear-history-btn');
+            const emptyTitle = document.getElementById('empty-state-title');
+            const emptySub = document.getElementById('empty-state-sub');
+            const actionsBar = document.getElementById('history-actions-bar');
+            const summaryBar = document.getElementById('daily-summary-bar');
             const countBadge = document.getElementById('entry-count-badge');
 
             listEl.innerHTML = '';
-            countBadge.textContent = history.length;
 
             if (history.length === 0) {
+                countBadge.textContent = '0';
                 emptyEl.classList.remove('hidden');
-                clearBtn.classList.add('hidden');
+                emptyTitle.textContent = 'No entries saved yet';
+                emptySub.textContent = 'Count your cash and click Save Entry.';
+                actionsBar.classList.add('hidden');
+                summaryBar.classList.add('hidden');
+                return;
+            }
+
+            actionsBar.classList.remove('hidden');
+            const filtered = getFilteredHistory();
+            countBadge.textContent = searchQuery ? `${filtered.length}/${history.length}` : `${history.length}`;
+
+            // Calculate summary totals for visible (or all) entries
+            let sumCash = 0;
+            let sumOnline = 0;
+            let sumGrand = 0;
+            let sumShort = 0;
+
+            filtered.forEach(item => {
+                sumCash += Number(item.cashTotal || 0);
+                sumOnline += Number(item.onlineTotal || 0);
+                sumGrand += Number(item.grandTotal || 0);
+                if (item.billTotal && item.billTotal > item.grandTotal) {
+                    sumShort += (item.billTotal - item.grandTotal);
+                }
+            });
+
+            sumCash = Math.round(sumCash * 100) / 100;
+            sumOnline = Math.round(sumOnline * 100) / 100;
+            sumGrand = Math.round(sumGrand * 100) / 100;
+            sumShort = Math.round(sumShort * 100) / 100;
+
+            summaryBar.classList.remove('hidden');
+            document.getElementById('sum-cash-display').textContent = formatINR(sumCash);
+            document.getElementById('sum-online-display').textContent = formatINR(sumOnline);
+            document.getElementById('sum-grand-display').textContent = (searchQuery ? 'Filtered Total: ' : 'Total: ') + formatINR(sumGrand);
+
+            const shortWrap = document.getElementById('sum-short-wrap');
+            if (sumShort > 0) {
+                shortWrap.classList.remove('hidden');
+                document.getElementById('sum-short-display').textContent = formatINR(sumShort);
+            } else {
+                shortWrap.classList.add('hidden');
+            }
+
+            if (filtered.length === 0) {
+                emptyEl.classList.remove('hidden');
+                emptyTitle.textContent = 'No matching entries found';
+                emptySub.textContent = 'Try searching a different client name or date.';
                 return;
             }
 
             emptyEl.classList.add('hidden');
-            clearBtn.classList.remove('hidden');
 
-            history.forEach(item => {
+            filtered.forEach(item => {
                 const notesList = Object.entries(item.breakdown || {})
                     .map(([denom, qty]) => `${qty}×₹${denom}`)
                     .join(', ');
@@ -1620,6 +1824,92 @@
                 `;
                 listEl.appendChild(card);
             });
+        }
+
+        function exportEntriesToCSV() {
+            const rowsToExport = getFilteredHistory();
+            if (rowsToExport.length === 0) {
+                showToast('No entries to export');
+                return;
+            }
+
+            const headers = [
+                'Date & Time',
+                'Client / Sender Name',
+                'To Collect (Bill)',
+                'Cash Total',
+                'Online Total',
+                'Grand Total (Received)',
+                'Balance Due (Short)',
+                'Note Breakdown'
+            ];
+
+            const csvEscape = (val) => {
+                const str = String(val ?? '');
+                if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                    return '"' + str.replace(/"/g, '""') + '"';
+                }
+                return str;
+            };
+
+            const lines = [headers.join(',')];
+
+            let totBill = 0, totCash = 0, totOnline = 0, totGrand = 0, totShort = 0;
+
+            rowsToExport.forEach(item => {
+                const bill = Number(item.billTotal || 0);
+                const cash = Number(item.cashTotal || 0);
+                const online = Number(item.onlineTotal || 0);
+                const grand = Number(item.grandTotal || 0);
+                const shortAmt = bill > grand ? Math.round((bill - grand) * 100) / 100 : 0;
+
+                totBill += bill;
+                totCash += cash;
+                totOnline += online;
+                totGrand += grand;
+                totShort += shortAmt;
+
+                const notes = Object.entries(item.breakdown || {})
+                    .map(([d, q]) => `${q}xRs.${d}`)
+                    .join(' | ') || (cash > 0 ? 'Cash' : 'Online Only');
+
+                lines.push([
+                    csvEscape(item.timestamp),
+                    csvEscape(item.name),
+                    bill,
+                    cash,
+                    online,
+                    grand,
+                    shortAmt,
+                    csvEscape(notes)
+                ].join(','));
+            });
+
+            // Add Summary Total Row at bottom
+            lines.push([
+                '',
+                'TOTAL',
+                Math.round(totBill * 100) / 100,
+                Math.round(totCash * 100) / 100,
+                Math.round(totOnline * 100) / 100,
+                Math.round(totGrand * 100) / 100,
+                Math.round(totShort * 100) / 100,
+                ''
+            ].join(','));
+
+            // Add UTF-8 BOM so Excel opens Rupee symbols & formatting cleanly
+            const csvBlob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(csvBlob);
+            const a = document.createElement('a');
+            const dateStr = new Date().toISOString().slice(0, 10);
+            a.href = url;
+            a.download = `COD_Entries_${dateStr}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showToast(`Exported ${rowsToExport.length} entries to CSV`);
         }
 
         /* =========================================================
@@ -1866,7 +2156,7 @@
                 const manifestObj = {
                     name: 'COD Cash Counter',
                     short_name: 'COD Counter',
-                    description: 'Daily COD cash denomination counter and settlement calculator',
+                    description: 'Daily COD cash denomination counter, settlement & CSV export',
                     start_url: startUrl,
                     scope: './',
                     display: 'standalone',
