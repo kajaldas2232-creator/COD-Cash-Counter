@@ -26,10 +26,10 @@ button{cursor:pointer;border:0;background:none}
 input[type=number]{-moz-appearance:textfield}
 input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appearance:none}
 header{background:var(--brand);color:#fff;padding:calc(10px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));position:sticky;top:0;z-index:20}
-.bar{max-width:1280px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bar{max-width:1280px;margin:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:1.1rem}
 .logo{width:32px;height:32px;border-radius:9px;background:#fff;color:var(--brand);display:grid;place-items:center;font-weight:800}
-.hbtn{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.35);color:#fff;font-weight:650;font-size:.88rem}
+.hbtn{min-height:40px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.35);color:#fff;font-weight:650;font-size:.88rem}
 .hbtn.solid{background:#fff;color:var(--brand);border-color:#fff}
 main{max-width:1280px;margin:auto;padding:14px max(14px,env(safe-area-inset-left)) calc(84px + env(safe-area-inset-bottom));display:grid;gap:14px;align-items:start}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
@@ -97,6 +97,10 @@ nav button[aria-selected=true]{color:var(--accent);box-shadow:inset 0 3px 0 var(
 nav svg{width:22px;height:22px}
 .toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translate(-50%,12px);background:#10201a;color:#fff;padding:10px 18px;border-radius:999px;font-weight:650;opacity:0;pointer-events:none;transition:.2s;z-index:60;max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+dialog{border:0;border-radius:18px;padding:20px;width:min(92vw,380px);background:var(--card);color:var(--ink);box-shadow:0 20px 50px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(8,20,15,.55)}dialog h2{font-size:1.1rem;margin-bottom:6px}dialog p{color:var(--sub);font-size:.9rem;margin-bottom:12px}dialog .in{margin-bottom:10px}
+.dbtn{display:flex;gap:8px;margin-top:6px}.dbtn button{flex:1;min-height:46px;border-radius:12px;font-weight:700;border:1.5px solid var(--line)}.dbtn .p{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+#dErr{color:var(--red);min-height:20px;font-size:.88rem;font-weight:600}
 .right{display:contents}
 @media(max-width:999px){
  [data-pane]{display:none}
@@ -117,7 +121,7 @@ nav svg{width:22px;height:22px}
 <body data-tab="count">
 <header><div class="bar">
  <div class="brand"><div class="logo">₹</div>COD Cash Counter</div>
- <div class="tools"><button class="hbtn solid" id="install">Install</button><button class="hbtn" id="reset">Clear form</button></div>
+ <div class="tools"><button class="hbtn" id="acct">Sync</button><button class="hbtn solid" id="install">Install</button><button class="hbtn" id="reset">Clear</button></div>
 </div></header>
 
 <main>
@@ -171,6 +175,16 @@ nav svg{width:22px;height:22px}
  <button role="tab" data-t="history" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Entries</button>
  <button role="tab" data-t="calc" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 12h.01M12 12h.01M15 12h.01M9 16h.01M12 16h.01M15 16h.01"/></svg>Calc</button>
 </nav>
+<dialog id="dlg" aria-labelledby="dT"><h2 id="dT">Sync across devices</h2>
+ <div id="dOff" class="hidden"><p>Cloud sync is not set up yet. Add your Supabase URL and key at the top of the script in index.html.</p></div>
+ <div id="dOut"><p>Sign in on each device with the same account to see the same entries everywhere.</p>
+  <input class="in" id="dEmail" type="email" autocomplete="email" placeholder="Email" aria-label="Email">
+  <input class="in" id="dPass" type="password" autocomplete="current-password" placeholder="Password (min 6 characters)" aria-label="Password">
+  <div id="dErr" role="alert"></div>
+  <div class="dbtn"><button type="button" class="p" id="dIn1">Sign in</button><button type="button" id="dUp">Create account</button></div></div>
+ <div id="dIn" class="hidden"><p id="dWho"></p><p id="dStat"></p>
+  <div class="dbtn"><button type="button" class="p" id="dSync">Sync now</button><button type="button" id="dOut1">Sign out</button></div></div>
+ <div class="dbtn"><button type="button" id="dClose">Close</button></div></dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -223,7 +237,7 @@ $('save').onclick=()=>{
  const now=new Date(),bd={};[...D].reverse().forEach(d=>{if(counts[d]>0)bd[d]=counts[d]});
  hist.unshift({id:Date.now(),dateISO:iso(now),name:n,billTotal:bill,cashTotal:cash,onlineTotal:online,grandTotal:total,breakdown:bd,
   timestamp:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+', '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}).toLowerCase()});
- store();render();clearForm(true);toast(`Saved entry for ${n}`)};
+ store();render();clearForm(true);toast(`Saved entry for ${n}`);push(hist[0])};
 const dateOf=i=>i.dateISO||iso(new Date(i.id));
 function filtered(){const t=iso(),y=new Date();y.setDate(y.getDate()-1);const yi=iso(y);
  return hist.filter(i=>{const d=dateOf(i);if(filter==='today'&&d!==t)return false;if(filter==='yesterday'&&d!==yi)return false;if(filter==='date'&&d!==day)return false;
@@ -244,8 +258,8 @@ function render(){
  <div class="item-m"><span>${esc(notes(i))}</span></div></div>`).join('');
 }
 $('list').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;const it=hist.find(i=>i.id==b.dataset.del);
- if(it&&confirm(`Delete the entry for ${it.name}?`)){hist=hist.filter(i=>i.id!=it.id);store();render();toast('Entry deleted')}};
-$('clear').onclick=()=>{if(confirm('Delete ALL saved entries from this device? This cannot be undone.')){hist=[];store();setF('all');toast('All entries cleared')}};
+ if(it&&confirm(`Delete the entry for ${it.name}?`)){if(it.synced)rmCloud([it.id]);hist=hist.filter(i=>i.id!=it.id);store();render();toast('Entry deleted')}};
+$('clear').onclick=()=>{if(confirm('Delete ALL saved entries from this device? This cannot be undone.')){rmCloud(hist.filter(i=>i.synced).map(i=>i.id));hist=[];store();setF('all');toast('All entries cleared')}};
 function setF(f){filter=f;if(f!=='date'){day='';$('date').value=''}document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('active',p.dataset.f===f));render()}
 document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>setF(p.dataset.f));
 $('date').onchange=e=>{day=e.target.value;if(day){filter='date';document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));render()}else setF('all')};
@@ -305,7 +319,56 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('inst
 addEventListener('appinstalled',()=>{$('install').classList.add('hidden');toast('App installed')});
 $('install').onclick=async()=>{if(deferred){deferred.prompt();await deferred.userChoice;deferred=null;$('install').classList.add('hidden')}else toast('Use your browser menu: Add to Home Screen')};
 
-buildRows();load();calc();pwa();
+/* Cloud sync (Supabase) */
+const SB_URL='',SB_KEY=''; /* paste your Project URL and anon/publishable key here */
+const SES='codSession_v1',cfg=()=>!!(SB_URL&&SB_KEY);
+let ses=null,syncing=false,last=null,pd=[];
+try{ses=JSON.parse(localStorage.getItem(SES))}catch(e){}
+try{pd=JSON.parse(localStorage.getItem('codPD'))||[]}catch(e){}
+const spd=()=>{try{localStorage.setItem('codPD',JSON.stringify(pd))}catch(e){}};
+function saveSes(x){ses=x;try{x?localStorage.setItem(SES,JSON.stringify(x)):localStorage.removeItem(SES)}catch(e){}
+ if(!x){hist.forEach(i=>delete i.synced);store()}ui()}
+const mk=d=>({access_token:d.access_token,refresh_token:d.refresh_token,expires_at:Date.now()+(d.expires_in||3600)*1000,user:{id:d.user.id,email:d.user.email}});
+async function auth(path,body){const r=await fetch(`${SB_URL}/auth/v1/${path}`,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+ const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.msg||d.error_description||d.message||'Request failed');return d}
+async function fresh(){if(!ses)return null;if(ses.expires_at-Date.now()>60000)return ses.access_token;
+ try{saveSes(mk(await auth('token?grant_type=refresh_token',{refresh_token:ses.refresh_token})));return ses.access_token}
+ catch(e){if(navigator.onLine&&/invalid|expired|not found/i.test(e.message)){saveSes(null);toast('Session expired. Sign in again to sync')}return null}}
+async function db(path,opt={}){const t=await fresh();if(!t)throw new Error('no session');
+ const r=await fetch(`${SB_URL}/rest/v1/${path}`,{...opt,headers:{apikey:SB_KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...opt.headers}});
+ if(!r.ok)throw new Error('db '+r.status);return r.status===204?null:r.json().catch(()=>null)}
+const toRow=i=>({id:String(i.id),date_iso:i.dateISO||'',timestamp_text:i.timestamp||'',client_name:i.name||'',bill_total:i.billTotal||0,cash_total:i.cashTotal||0,online_total:i.onlineTotal||0,grand_total:i.grandTotal||0,breakdown:i.breakdown||{}});
+const fromRow=r=>({id:Number(r.id),dateISO:r.date_iso,timestamp:r.timestamp_text,name:r.client_name,billTotal:+r.bill_total,cashTotal:+r.cash_total,onlineTotal:+r.online_total,grandTotal:+r.grand_total,breakdown:r.breakdown||{},synced:true});
+async function push(i){if(!ses||!i)return;try{await db('cod_entries?on_conflict=user_id,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(toRow(i))});i.synced=true;store()}catch(e){}}
+function rmCloud(ids){if(!ses)return;pd.push(...ids.map(String));spd();flushPD()}
+async function flushPD(){if(!ses)return;while(pd.length){const c=pd.slice(0,50);
+ try{await db(`cod_entries?id=in.(${c.map(encodeURIComponent).join(',')})`,{method:'DELETE'});pd=pd.filter(x=>!c.includes(x));spd()}catch(e){return}}}
+async function sync(manual){if(!ses||syncing)return;syncing=true;ui('Syncing…');
+ try{await flushPD();const rows=await db('cod_entries?select=*&order=id.desc&limit=1000');if(!Array.isArray(rows))throw 0;
+  const gone=new Set(pd),m=new Map();rows.map(fromRow).filter(c=>!gone.has(String(c.id))).forEach(c=>m.set(String(c.id),c));
+  hist.filter(i=>!i.synced).forEach(i=>m.set(String(i.id),i));
+  hist=[...m.values()].sort((a,b)=>b.id-a.id);store();render();
+  for(const i of hist.filter(i=>!i.synced))await push(i);
+  last=new Date();ui();if(manual)toast('Synced')}
+ catch(e){ui('Offline. Will sync when you are back online');if(manual)toast('Could not sync. Check your connection')}
+ syncing=false}
+function ui(msg){$('acct').textContent=ses?'● '+ses.user.email.split('@')[0].slice(0,10):'Sync';
+ $('dOff').classList.toggle('hidden',cfg());$('dOut').classList.toggle('hidden',!!ses||!cfg());$('dIn').classList.toggle('hidden',!ses);
+ if(ses){$('dWho').textContent='Signed in as '+ses.user.email;$('dStat').textContent=msg||(last?'Last synced '+last.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'Not synced yet')}}
+async function login(up){const email=$('dEmail').value.trim(),password=$('dPass').value,er=$('dErr');er.textContent='';
+ if(!email||password.length<6){er.textContent='Enter your email and a password of at least 6 characters.';return}
+ try{let d=await auth(up?'signup':'token?grant_type=password',{email,password});
+  if(!d.access_token){er.textContent='Account created. Confirm the email we sent, then tap Sign in.';return}
+  saveSes(mk(d));$('dPass').value='';$('dlg').close();toast('Signed in');sync(true)}
+ catch(e){er.textContent=/invalid login/i.test(e.message)?'Wrong email or password.':e.message}}
+$('acct').onclick=()=>{ui();$('dlg').showModal()};
+$('dClose').onclick=()=>$('dlg').close();$('dIn1').onclick=()=>login(false);$('dUp').onclick=()=>login(true);
+$('dSync').onclick=()=>sync(true);$('dOut1').onclick=()=>{saveSes(null);$('dlg').close();toast('Signed out. Entries stay on this device')};
+$('dPass').addEventListener('keydown',e=>{if(e.key==='Enter')login(false)});
+addEventListener('online',()=>sync());
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ses&&(!last||Date.now()-last>30000))sync()});
+
+buildRows();load();calc();pwa();ui();sync();
 </script>
 </body>
 </html>
