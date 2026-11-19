@@ -1,2678 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#047857">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="COD Cash Counter">
-    <meta name="application-name" content="COD Cash Counter">
-    <meta name="description" content="Offline-ready Cash & Online COD Denomination Counter with Daily Filter, Print/Share Summary & Quick Calculator">
-    <link id="dynamic-manifest" rel="manifest">
-    <link id="apple-touch-icon" rel="apple-touch-icon">
-    <link id="favicon-link" rel="icon" type="image/png">
-    <title>COD Cash Counter</title>
-    <style>
-        /* Reset & Base Typography */
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --emerald-50: #ecfdf5;
-            --emerald-100: #d1fae5;
-            --emerald-500: #10b981;
-            --emerald-600: #059669;
-            --emerald-700: #047857;
-            --emerald-800: #065f46;
-            --slate-50: #f1f5f9;
-            --slate-100: #e2e8f0;
-            --slate-200: #cbd5e1;
-            --slate-300: #94a3b8;
-            --slate-400: #64748b;
-            --slate-500: #475569;
-            --slate-600: #334155;
-            --slate-700: #1e293b;
-            --slate-800: #0f172a;
-            --blue-50: #eff6ff;
-            --blue-100: #dbeafe;
-            --blue-600: #2563eb;
-            --amber-50: #fffbeb;
-            --amber-100: #fef3c7;
-            --amber-700: #b45309;
-            --red-50: #fef2f2;
-            --red-100: #fee2e2;
-            --red-500: #ef4444;
-            --red-600: #dc2626;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--slate-50);
-            color: var(--slate-700);
-            line-height: 1.4;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        svg {
-            display: inline-block;
-            vertical-align: middle;
-            flex-shrink: 0;
-        }
-
-        /* Hide Number Spinners */
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--slate-200);
-            border-radius: 999px;
-        }
-
-        /* Top Header */
-        .app-header {
-            background-color: #065f46;
-            color: #ffffff;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
-        .header-inner {
-            max-width: 1440px;
-            margin: 0 auto;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .brand-icon {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6ee7b7;
-            font-weight: 800;
-            font-size: 0.95rem;
-        }
-        .brand-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 0.01em;
-        }
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .btn-install-app {
-            background: #ffffff;
-            color: #065f46;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 999px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
-            transition: background 0.15s ease, transform 0.1s ease;
-        }
-        .btn-install-app:hover {
-            background: var(--emerald-50);
-        }
-        .btn-clear-form {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.15s ease;
-        }
-        .btn-clear-form:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* 3-Column Main Layout */
-        .main-container {
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 16px 20px;
-            display: grid;
-            grid-template-columns: 330px 330px 1fr;
-            gap: 16px;
-            align-items: stretch;
-        }
-
-        @media (max-width: 1100px) {
-            .main-container {
-                grid-template-columns: 1fr 1fr;
-            }
-            .right-column {
-                grid-column: span 2;
-            }
-        }
-        @media (max-width: 740px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                padding: 10px;
-            }
-            .right-column {
-                grid-column: span 1;
-            }
-        }
-
-        /* Card Component */
-        .card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 14px;
-            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* COLUMN 1: Client, Bill & Denomination Rows */
-        .col1-top {
-            padding: 14px 16px 12px;
-            border-bottom: 1px solid #f1f5f9;
-            display: grid;
-            grid-template-columns: 1fr 125px;
-            gap: 10px;
-        }
-        .field-label {
-            display: block;
-            font-size: 0.74rem;
-            font-weight: 700;
-            color: #475569;
-            margin-bottom: 5px;
-        }
-        .text-input {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 0.86rem;
-            font-weight: 600;
-            color: #1e293b;
-            background: #ffffff;
-            outline: none;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-        .text-input:focus {
-            border-color: #059669;
-            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
-        }
-        .bill-input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .bill-prefix {
-            position: absolute;
-            left: 10px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #94a3b8;
-            pointer-events: none;
-        }
-        .bill-input {
-            padding-left: 22px;
-            text-align: right;
-            font-weight: 700;
-        }
-
-        .denom-list {
-            padding: 12px 16px 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .denom-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 5px 10px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 9px;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-        .denom-row:focus-within {
-            border-color: #10b981;
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.12);
-        }
-        .denom-label {
-            width: 48px;
-            text-align: right;
-            font-weight: 700;
-            font-size: 0.86rem;
-            color: #334155;
-        }
-        .denom-times {
-            color: #94a3b8;
-            font-size: 0.78rem;
-            font-weight: 700;
-        }
-        .denom-input {
-            flex: 1;
-            min-width: 0;
-            background: #f1f5f9;
-            border: 1px solid transparent;
-            border-radius: 6px;
-            padding: 5px 6px;
-            text-align: center;
-            font-size: 0.92rem;
-            font-weight: 700;
-            color: #0f172a;
-            outline: none;
-            transition: background 0.15s ease, border-color 0.15s ease;
-        }
-        .denom-input:focus {
-            background: #ffffff;
-            border-color: #10b981;
-        }
-        .denom-input::placeholder {
-            color: #94a3b8;
-            font-weight: 600;
-        }
-        .denom-subtotal {
-            width: 76px;
-            text-align: right;
-            font-weight: 700;
-            font-size: 0.86rem;
-            color: #047857;
-            white-space: nowrap;
-        }
-
-        /* COLUMN 2: Collection & Settlement */
-        .settlement-card {
-            padding: 14px 16px;
-            display: flex;
-            flex-direction: column;
-        }
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: #334155;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-        .section-title-icon {
-            color: #059669;
-            display: flex;
-            align-items: center;
-        }
-
-        .online-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 9px 12px;
-            margin-bottom: 12px;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
-        }
-        .online-box:focus-within {
-            border-color: #2563eb;
-            background: #ffffff;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        .online-left {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-        }
-        .online-badge {
-            width: 28px;
-            height: 28px;
-            border-radius: 7px;
-            background: #dbeafe;
-            color: #2563eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .online-title {
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: #1e293b;
-        }
-        .online-right {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .rupee-prefix {
-            color: #94a3b8;
-            font-weight: 700;
-            font-size: 0.92rem;
-        }
-        .online-input {
-            width: 105px;
-            border: none;
-            background: transparent;
-            text-align: right;
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #0f172a;
-            outline: none;
-        }
-        .online-input::placeholder {
-            color: #94a3b8;
-        }
-
-        /* Totals Gray Box */
-        .totals-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 12px 14px;
-            margin-bottom: 12px;
-        }
-        .totals-split-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.82rem;
-            color: #64748b;
-            font-weight: 600;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .totals-split-row strong.cash-val {
-            color: #0f172a;
-            font-weight: 800;
-        }
-        .totals-split-row strong.online-val {
-            color: #2563eb;
-            font-weight: 800;
-        }
-        .grand-total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            padding-top: 10px;
-        }
-        .grand-total-label {
-            font-size: 0.86rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        .grand-total-value {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: #047857;
-            letter-spacing: -0.02em;
-        }
-
-        /* Balance Due / Excess / Settled Box */
-        .balance-box {
-            border-radius: 10px;
-            padding: 11px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 14px;
-            transition: all 0.15s ease;
-        }
-        .balance-box.short {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-        }
-        .balance-box.excess {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-        }
-        .balance-box.settled {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-        }
-        .balance-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .balance-title {
-            font-size: 0.8rem;
-            font-weight: 800;
-        }
-        .balance-box.short .balance-title,
-        .balance-box.short .balance-amount {
-            color: #dc2626;
-        }
-        .balance-box.excess .balance-title,
-        .balance-box.excess .balance-amount {
-            color: #059669;
-        }
-        .balance-box.settled .balance-title,
-        .balance-box.settled .balance-amount {
-            color: #475569;
-        }
-        .balance-sub {
-            font-size: 0.72rem;
-            color: #64748b;
-            font-weight: 600;
-        }
-        .balance-amount {
-            font-size: 1.2rem;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .btn-save {
-            margin-top: auto;
-            width: 100%;
-            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
-            color: #ffffff;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 0.94rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.22);
-            transition: filter 0.15s ease, transform 0.1s ease;
-        }
-        .btn-save:hover {
-            filter: brightness(0.96);
-        }
-        .btn-save:active {
-            transform: scale(0.99);
-        }
-
-        /* COLUMN 3: Saved Entries + Quick Calculator */
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            min-width: 0;
-        }
-
-        /* Top Right: Saved Entries Card */
-        .history-card {
-            flex: 1;
-            min-height: 270px;
-            max-height: 335px;
-        }
-        .card-header {
-            padding: 9px 14px;
-            border-bottom: 1px solid #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            background: #ffffff;
-            flex-wrap: wrap;
-        }
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        .entry-count-badge {
-            background: #d1fae5;
-            color: #065f46;
-            font-size: 0.72rem;
-            font-weight: 800;
-            padding: 1px 7px;
-            border-radius: 999px;
-            margin-left: 2px;
-        }
-        .history-actions-bar {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        .btn-tool {
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            transition: background 0.15s ease;
-            border: 1px solid transparent;
-        }
-        .btn-tool-share {
-            background: #eff6ff;
-            color: #2563eb;
-            border-color: #dbeafe;
-        }
-        .btn-tool-share:hover {
-            background: #dbeafe;
-        }
-        .btn-tool-print {
-            background: #f1f5f9;
-            color: #334155;
-            border-color: #e2e8f0;
-        }
-        .btn-tool-print:hover {
-            background: #e2e8f0;
-        }
-        .btn-tool-csv {
-            background: #ecfdf5;
-            color: #047857;
-            border-color: #a7f3d0;
-        }
-        .btn-tool-csv:hover {
-            background: #d1fae5;
-        }
-        .btn-clear-history {
-            background: transparent;
-            border: none;
-            color: #ef4444;
-            font-size: 0.73rem;
-            font-weight: 700;
-            padding: 4px 6px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.15s ease;
-        }
-        .btn-clear-history:hover {
-            background: #fef2f2;
-        }
-        .hidden {
-            display: none !important;
-        }
-
-        /* Filter Toolbar (Date Filter + Search Input) */
-        .filter-toolbar {
-            background: #ffffff;
-            border-bottom: 1px solid #f1f5f9;
-            padding: 7px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .date-pills {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-        .date-pill {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 3px 8px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.12s ease;
-        }
-        .date-pill:hover {
-            background: #e2e8f0;
-        }
-        .date-pill.active {
-            background: #047857;
-            color: #ffffff;
-            border-color: #047857;
-        }
-        .custom-date-input {
-            padding: 2px 6px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: #334155;
-            background: #f8fafc;
-            outline: none;
-            cursor: pointer;
-        }
-        .custom-date-input.active {
-            border-color: #047857;
-            background: #ecfdf5;
-            color: #065f46;
-        }
-        .search-box-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-            flex: 1;
-            min-width: 130px;
-            max-width: 190px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 4px 22px 4px 9px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 0.74rem;
-            font-weight: 600;
-            color: #1e293b;
-            background: #f8fafc;
-            outline: none;
-            transition: border-color 0.15s ease, background 0.15s ease;
-        }
-        .search-input:focus {
-            background: #ffffff;
-            border-color: #059669;
-        }
-        .search-clear-btn {
-            position: absolute;
-            right: 5px;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 0.74rem;
-            cursor: pointer;
-            padding: 0 3px;
-        }
-
-        /* Daily / Filtered Summary Strip */
-        .daily-summary-bar {
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 6px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-            font-size: 0.74rem;
-        }
-        .summary-chip-group {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            flex-wrap: wrap;
-        }
-        .summary-chip {
-            color: #475569;
-            font-weight: 600;
-        }
-        .summary-chip strong.cash {
-            color: #0f172a;
-            font-weight: 800;
-        }
-        .summary-chip strong.online {
-            color: #2563eb;
-            font-weight: 800;
-        }
-        .summary-chip strong.short {
-            color: #dc2626;
-            font-weight: 800;
-        }
-        .summary-total-pill {
-            background: #d1fae5;
-            color: #065f46;
-            font-weight: 800;
-            padding: 2px 9px;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-        }
-
-        .history-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 14px;
-            background: #ffffff;
-        }
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .history-item {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 8px 12px;
-            animation: slideIn 0.18s ease-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-3px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .history-item-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-        .entry-user-line {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-        }
-        .entry-user-name {
-            font-weight: 800;
-            font-size: 0.85rem;
-            color: #0f172a;
-        }
-        .entry-time {
-            font-size: 0.71rem;
-            color: #94a3b8;
-            font-weight: 600;
-        }
-        .btn-delete-entry {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            padding: 2px 5px;
-            border-radius: 5px;
-            font-size: 0.86rem;
-            line-height: 1;
-        }
-        .btn-delete-entry:hover {
-            color: #dc2626;
-            background: #fee2e2;
-        }
-
-        .history-item-mid {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3px;
-        }
-        .entry-inline-splits {
-            font-size: 0.78rem;
-            color: #475569;
-            font-weight: 600;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .entry-inline-splits strong.cash {
-            color: #0f172a;
-        }
-        .entry-inline-splits strong.online {
-            color: #2563eb;
-        }
-        .entry-inline-splits strong.short {
-            color: #dc2626;
-        }
-        .entry-grand {
-            font-size: 0.94rem;
-            font-weight: 800;
-            color: #047857;
-            white-space: nowrap;
-        }
-        .entry-breakdown {
-            font-size: 0.71rem;
-            color: #64748b;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .empty-state {
-            height: 100%;
-            min-height: 115px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #94a3b8;
-            text-align: center;
-            padding: 12px;
-        }
-        .empty-state-title {
-            font-weight: 700;
-            font-size: 0.84rem;
-            color: #64748b;
-            margin-top: 6px;
-        }
-        .empty-state-sub {
-            font-size: 0.73rem;
-            margin-top: 2px;
-        }
-
-        /* Bottom Right: Quick Calculator */
-        .calc-card {
-            background: #ffffff;
-        }
-        .calc-header-actions {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-        .btn-use-calc {
-            background: #eff6ff;
-            color: #2563eb;
-            border: 1px solid #dbeafe;
-            border-radius: 6px;
-            padding: 4px 10px;
-            font-size: 0.73rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.15s ease;
-        }
-        .btn-use-calc:hover {
-            background: #dbeafe;
-        }
-        .btn-use-bill {
-            background: #ecfdf5;
-            color: #047857;
-            border: 1px solid #d1fae5;
-        }
-        .btn-use-bill:hover {
-            background: #d1fae5;
-        }
-
-        .calc-body {
-            padding: 12px 14px 14px;
-            display: grid;
-            grid-template-columns: 1fr 230px;
-            gap: 12px;
-            align-items: stretch;
-        }
-        @media (max-width: 640px) {
-            .calc-body {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Calculator Output Window */
-        .calc-display-box {
-            background: #0f172a;
-            border-radius: 10px;
-            padding: 11px 14px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: text;
-            border: 2px solid #1e293b;
-            transition: border-color 0.15s ease;
-            min-height: 102px;
-        }
-        .calc-display-box:focus-within {
-            border-color: #10b981;
-        }
-        .calc-expr-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-        }
-        .calc-badge {
-            font-size: 0.62rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.14);
-            padding: 2px 7px;
-            border-radius: 4px;
-        }
-        .calc-history-line {
-            font-size: 0.78rem;
-            color: #94a3b8;
-            text-align: right;
-            min-height: 16px;
-            word-break: break-all;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        }
-        .calc-input-field {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: #ffffff;
-            font-size: 1.6rem;
-            font-weight: 700;
-            text-align: right;
-            outline: none;
-            margin-top: 4px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        }
-        .calc-input-field::placeholder {
-            color: #475569;
-        }
-        .calc-live-preview {
-            font-size: 0.82rem;
-            color: #6ee7b7;
-            text-align: right;
-            font-weight: 600;
-            min-height: 16px;
-            margin-top: 2px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        }
-
-        /* Operator-Only Keypad */
-        .operator-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-        }
-        .op-btn {
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 7px 4px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #1e293b;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.12s ease, transform 0.08s ease;
-            user-select: none;
-        }
-        .op-btn:hover {
-            background: #e2e8f0;
-        }
-        .op-btn:active {
-            transform: scale(0.95);
-        }
-        .op-btn-symbol {
-            background: #ecfdf5;
-            border-color: #d1fae5;
-            color: #065f46;
-        }
-        .op-btn-symbol:hover {
-            background: #d1fae5;
-        }
-        .op-btn-danger {
-            background: #fef2f2;
-            border-color: #fecaca;
-            color: #dc2626;
-            font-size: 0.86rem;
-        }
-        .op-btn-danger:hover {
-            background: #fee2e2;
-        }
-        .op-btn-equals {
-            grid-column: span 2;
-            background: #059669;
-            border-color: #059669;
-            color: #ffffff;
-            font-size: 1.12rem;
-        }
-        .op-btn-equals:hover {
-            background: #047857;
-        }
-
-        /* Modals */
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.45);
-            backdrop-filter: blur(2px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            z-index: 50;
-        }
-        .modal-backdrop.open {
-            display: flex;
-        }
-        .modal-box {
-            background: #ffffff;
-            border-radius: 14px;
-            width: 100%;
-            max-width: 390px;
-            padding: 20px;
-            box-shadow: 0 20px 35px rgba(15, 23, 42, 0.2);
-            animation: slideIn 0.18s ease-out;
-        }
-        .modal-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 5px;
-        }
-        .modal-desc {
-            font-size: 0.84rem;
-            color: #64748b;
-            margin-bottom: 14px;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-        .btn-modal-cancel {
-            flex: 1;
-            padding: 9px;
-            border-radius: 9px;
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
-            color: #334155;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .btn-modal-confirm {
-            flex: 1;
-            padding: 9px;
-            border-radius: 9px;
-            border: none;
-            background: #059669;
-            color: #ffffff;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .btn-modal-danger {
-            flex: 1;
-            padding: 9px;
-            border-radius: 9px;
-            border: none;
-            background: #dc2626;
-            color: #ffffff;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .input-error {
-            border-color: #ef4444 !important;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
-        }
-
-        /* Summary Preview Box inside Share Modal */
-        .summary-preview-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 9px;
-            padding: 11px 12px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size: 0.78rem;
-            color: #1e293b;
-            white-space: pre-wrap;
-            max-height: 230px;
-            overflow-y: auto;
-            line-height: 1.45;
-        }
-
-        .install-steps {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 0.82rem;
-            color: #334155;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(16px);
-            background: #0f172a;
-            color: #ffffff;
-            padding: 10px 18px;
-            border-radius: 999px;
-            font-size: 0.84rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.22s ease, transform 0.22s ease;
-            z-index: 60;
-        }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Dedicated Print Receipt Styles */
-        #print-area {
-            display: none;
-        }
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            #print-area, #print-area * {
-                visibility: visible;
-            }
-            #print-area {
-                display: block;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                padding: 20px;
-                color: #0f172a;
-                background: #ffffff;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            }
-            .print-header {
-                border-bottom: 2px solid #0f172a;
-                padding-bottom: 10px;
-                margin-bottom: 14px;
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-end;
-            }
-            .print-title {
-                font-size: 1.3rem;
-                font-weight: 800;
-            }
-            .print-meta {
-                font-size: 0.85rem;
-                color: #475569;
-            }
-            .print-table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 0.84rem;
-                margin-bottom: 16px;
-            }
-            .print-table th, .print-table td {
-                border: 1px solid #cbd5e1;
-                padding: 7px 9px;
-                text-align: left;
-            }
-            .print-table th {
-                background: #f1f5f9;
-                font-weight: 700;
-            }
-            .print-table td.num, .print-table th.num {
-                text-align: right;
-            }
-            .print-totals {
-                border-top: 2px solid #0f172a;
-                padding-top: 10px;
-                display: flex;
-                justify-content: flex-end;
-                gap: 24px;
-                font-size: 0.95rem;
-                font-weight: 800;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b3b2c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="COD Counter">
+<meta name="description" content="Offline cash and online COD denomination counter with daily filter, share and CSV export">
+<link id="manifest" rel="manifest">
+<link id="touch-icon" rel="apple-touch-icon">
+<link id="favicon" rel="icon" type="image/png">
+<title>COD Cash Counter</title>
+<style>
+:root{--bg:#e9eeeb;--card:#fff;--ink:#12201a;--sub:#4b5b53;--line:#d5ddd8;--field:#f1f5f3;--brand:#0b3b2c;--accent:#0f7a55;--accent-ink:#fff;--soft:#dff1e8;--blue:#1d4ed8;--red:#b42318;--red-bg:#fdecea;--amber:#8a5a00;--amber-bg:#fff3d6;--shadow:0 1px 2px rgba(11,59,44,.08),0 6px 18px rgba(11,59,44,.06)}
+@media(prefers-color-scheme:dark){:root{--bg:#0c1511;--card:#15211b;--ink:#e8f1ec;--sub:#a3b5ab;--line:#2a3a32;--field:#1c2b24;--brand:#07241a;--accent:#2fb67f;--accent-ink:#052117;--soft:#173a2b;--blue:#8db4ff;--red:#ff8a80;--red-bg:#3a1b19;--amber:#ffcb6b;--amber-bg:#3a2d10;--shadow:none}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+input[type=number]{-moz-appearance:textfield}
+input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appearance:none}
+header{background:var(--brand);color:#fff;padding:calc(10px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));position:sticky;top:0;z-index:20}
+.bar{max-width:1280px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:1.1rem}
+.logo{width:32px;height:32px;border-radius:9px;background:#fff;color:var(--brand);display:grid;place-items:center;font-weight:800}
+.hbtn{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.35);color:#fff;font-weight:650;font-size:.88rem}
+.hbtn.solid{background:#fff;color:var(--brand);border-color:#fff}
+main{max-width:1280px;margin:auto;padding:14px max(14px,env(safe-area-inset-left)) calc(84px + env(safe-area-inset-bottom));display:grid;gap:14px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line);font-weight:700}
+.badge{background:var(--soft);color:var(--accent);border-radius:999px;padding:1px 9px;font-size:.8rem;font-weight:750;margin-left:6px}
+.pad{padding:14px}
+label,.lbl{display:block;font-size:.82rem;font-weight:650;color:var(--sub);margin-bottom:5px}
+.in{width:100%;min-height:46px;padding:0 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--field);font-size:1rem;font-weight:650}
+.in:focus{background:var(--card);border-color:var(--accent);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.in.err{border-color:var(--red);box-shadow:0 0 0 3px color-mix(in srgb,var(--red) 20%,transparent)}
+.top{display:grid;grid-template-columns:1fr 130px;gap:10px;padding:14px;border-bottom:1px solid var(--line)}
+.money{position:relative}.money span{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--sub);font-weight:700}
+.money .in{padding-left:26px;text-align:right}
+.denoms{padding:10px 14px;display:grid;gap:6px}
+.row{display:grid;grid-template-columns:64px 1fr 84px;align-items:center;gap:8px;padding:4px 6px 4px 4px;border-radius:12px;border:1.5px solid transparent}
+.row.on{background:var(--soft)}
+.note{font-weight:800;font-size:1.02rem;text-align:center;padding:8px 0;border-radius:9px;background:var(--field);border:1px solid var(--line)}
+.step{display:grid;grid-template-columns:44px 1fr 44px;gap:4px}
+.step button{height:44px;border-radius:11px;background:var(--field);border:1px solid var(--line);font-size:1.3rem;font-weight:700}
+.step button:active{background:var(--soft)}
+.step input{min-width:0;height:44px;text-align:center;font-weight:800;font-size:1.1rem;border:1.5px solid var(--line);border-radius:11px;background:var(--card)}
+.step input:focus{border-color:var(--accent);outline:none}
+.sub{text-align:right;font-weight:750;color:var(--accent);white-space:nowrap}
+.online{margin:4px 14px 14px;padding:12px;border-radius:12px;background:var(--field);display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700}
+.online .money{width:150px}
+.settle .rec{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:14px 14px 10px}
+.settle small{display:block;color:var(--sub);font-size:.8rem;font-weight:600}
+.big{font-size:2rem;font-weight:850;line-height:1.1;letter-spacing:-.02em}
+.bal{padding:8px 12px;border-radius:12px;text-align:right;min-width:130px}
+.bal b{font-size:1.25rem;display:block}
+.bal.short{background:var(--red-bg);color:var(--red)}.bal.excess{background:var(--soft);color:var(--accent)}.bal.settled{background:var(--field);color:var(--sub)}
+.bal small{color:inherit}
+.save{margin:0 14px 14px;width:calc(100% - 28px);min-height:52px;border-radius:14px;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:1.05rem}
+.save:active{transform:scale(.99)}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.tb{min-height:36px;padding:0 12px;border-radius:9px;background:var(--field);border:1px solid var(--line);font-weight:650;font-size:.84rem}
+.tb.danger{color:var(--red)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line)}
+.pill{min-height:36px;padding:0 12px;border-radius:999px;background:var(--field);border:1px solid var(--line);font-weight:650;font-size:.85rem}
+.pill.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.filters .in{min-height:36px;font-size:.9rem;width:auto;flex:1;min-width:130px}
+.sum{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 14px;background:var(--soft);font-size:.88rem;font-weight:650}
+.list{max-height:420px;overflow:auto;padding:10px 14px;display:grid;gap:8px}
+.item{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--field)}
+.item-t{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.item b{font-size:.98rem}.item time{color:var(--sub);font-size:.8rem;margin-left:6px}
+.item-m{display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-size:.88rem;color:var(--sub)}
+.item-m strong.tot{color:var(--accent);font-size:1rem}
+.chip{display:inline-block;padding:0 8px;border-radius:999px;background:var(--red-bg);color:var(--red);font-weight:700;font-size:.8rem}
+.x{width:36px;height:36px;border-radius:9px;color:var(--sub);font-size:1.1rem}
+.x:hover{background:var(--red-bg);color:var(--red)}
+.empty{padding:28px 14px;text-align:center;color:var(--sub)}.empty b{display:block;color:var(--ink)}
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px}
+.screen{grid-column:1/-1;background:#0d1a14;color:#fff;border-radius:12px;padding:10px 14px;text-align:right}
+.screen small{color:#9fb5aa;min-height:18px}
+.screen input{width:100%;background:none;border:0;color:#fff;text-align:right;font-size:1.7rem;font-weight:700;outline:none}
+.screen .live{color:#6ee7b7;min-height:20px;font-size:.9rem}
+.keys{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.keys button{min-height:46px;border-radius:11px;background:var(--field);border:1px solid var(--line);font-weight:750;font-size:1.05rem}
+.keys .op{background:var(--soft);color:var(--accent)}.keys .eq{background:var(--accent);color:var(--accent-ink)}.keys .c{color:var(--red)}
+.use{min-height:44px;border-radius:11px;border:1.5px solid var(--accent);color:var(--accent);font-weight:700}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{min-height:58px;font-weight:700;font-size:.82rem;color:var(--sub);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+nav button[aria-selected=true]{color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+nav svg{width:22px;height:22px}
+.toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translate(-50%,12px);background:#10201a;color:#fff;padding:10px 18px;border-radius:999px;font-weight:650;opacity:0;pointer-events:none;transition:.2s;z-index:60;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.right{display:contents}
+@media(max-width:999px){
+ [data-pane]{display:none}
+ body[data-tab=count] [data-pane=count],body[data-tab=history] [data-pane=history],body[data-tab=calc] [data-pane=calc]{display:block}
+ .settle{position:sticky;bottom:calc(66px + env(safe-area-inset-bottom));z-index:10;box-shadow:0 -6px 20px rgba(0,0,0,.14)}
+ .settle .big{font-size:1.6rem}
+}
+@media(min-width:1000px){
+ main{grid-template-columns:360px 340px 1fr;padding-bottom:24px}
+ nav{display:none}.toast{bottom:24px}
+ .settle{position:sticky;top:76px}
+ .right{display:flex;flex-direction:column;gap:14px;min-width:0}
+ [data-pane]{display:block}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
 </head>
-<body>
+<body data-tab="count">
+<header><div class="bar">
+ <div class="brand"><div class="logo">₹</div>COD Cash Counter</div>
+ <div class="tools"><button class="hbtn solid" id="install">Install</button><button class="hbtn" id="reset">Clear form</button></div>
+</div></header>
 
-    <!-- Top Emerald Header -->
-    <header class="app-header">
-        <div class="header-inner">
-            <div class="brand">
-                <div class="brand-icon">₹</div>
-                <h1 class="brand-title">COD Cash Counter</h1>
-            </div>
-            <div class="header-actions">
-                <button type="button" id="install-app-btn" class="btn-install-app" onclick="handleInstallClick()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    <span>Install App</span>
-                </button>
-                <button type="button" class="btn-clear-form" onclick="clearForm()">Clear Form</button>
-            </div>
-        </div>
-    </header>
+<main>
+ <section class="card" data-pane="count" aria-label="Cash count">
+  <div class="top">
+   <div><label for="name">Client / sender</label><input class="in" id="name" autocomplete="off" placeholder="e.g. John Doe"></div>
+   <div><label for="bill">To collect</label><div class="money"><span>₹</span><input class="in" id="bill" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0"></div></div>
+  </div>
+  <div class="denoms" id="denoms"></div>
+  <div class="online"><span>Online / UPI received</span><div class="money"><span>₹</span><input class="in" id="online" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0" aria-label="Online amount received"></div></div>
+ </section>
 
-    <!-- Main 3-Column Container -->
-    <main class="main-container">
-        
-        <!-- COLUMN 1: Client Name + To Collect (Bill) + Denominations -->
-        <section class="card">
-            <div class="col1-top">
-                <div>
-                    <label for="entry-name" class="field-label">Client / Sender Name</label>
-                    <input type="text" id="entry-name" class="text-input" placeholder="e.g., John Doe" autocomplete="off">
-                </div>
-                <div>
-                    <label for="bill-amount" class="field-label">To Collect (Bill)</label>
-                    <div class="bill-input-wrap">
-                        <span class="bill-prefix">₹</span>
-                        <input type="number" inputmode="decimal" step="0.01" min="0" onwheel="this.blur()" id="bill-amount" class="text-input bill-input" placeholder="0" oninput="handleBillInput(this.value)">
-                    </div>
-                </div>
-            </div>
+ <section class="card settle" data-pane="count" aria-label="Settlement">
+  <div class="rec">
+   <div><small>Received</small><div class="big" id="gt">₹0</div><small id="split">Cash ₹0 · Online ₹0</small></div>
+   <div class="bal settled" id="bal"><small id="bt">Balance</small><b id="ba">₹0</b></div>
+  </div>
+  <button class="save" id="save">Save entry</button>
+ </section>
 
-            <!-- Denominations List (₹500 down to ₹1) -->
-            <div class="denom-list" id="denom-list"></div>
-        </section>
+ <div class="right">
+  <section class="card" data-pane="history" aria-label="Saved entries">
+   <div class="card-h"><span>Saved entries<span class="badge" id="count">0</span></span>
+    <div class="tools hidden" id="acts"><button class="tb" id="share">Share</button><button class="tb" id="csv">CSV</button><button class="tb danger" id="clear">Clear all</button></div></div>
+   <div class="filters hidden" id="filters">
+    <button class="pill active" data-f="all">All</button><button class="pill" data-f="today">Today</button><button class="pill" data-f="yesterday">Yesterday</button>
+    <input class="in" type="date" id="date" aria-label="Filter by date"><input class="in" type="search" id="q" placeholder="Search name" aria-label="Search by name">
+   </div>
+   <div class="sum hidden" id="sum"></div>
+   <div class="list" id="list"></div>
+   <div class="empty" id="empty"><b>No entries yet</b>Count the cash, then tap Save entry.</div>
+  </section>
 
-        <!-- COLUMN 2: Collection & Settlement -->
-        <section class="card settlement-card">
-            <div class="section-header">
-                <div class="section-title">
-                    <span class="section-title-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-                            <line x1="2" y1="10" x2="22" y2="10"></line>
-                        </svg>
-                    </span>
-                    <span>COLLECTION & SETTLEMENT</span>
-                </div>
-            </div>
-
-            <!-- Online Amount Box -->
-            <div class="online-box">
-                <div class="online-left">
-                    <div class="online-badge">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                        </svg>
-                    </div>
-                    <span class="online-title">Online</span>
-                </div>
-                <div class="online-right">
-                    <span class="rupee-prefix">₹</span>
-                    <input type="number" inputmode="decimal" step="0.01" min="0" onwheel="this.blur()" id="online-amount" class="online-input" placeholder="0" oninput="handleOnlineInput(this.value)">
-                </div>
-            </div>
-
-            <!-- Cash, Online & Grand Total Received Box -->
-            <div class="totals-box">
-                <div class="totals-split-row">
-                    <span>Cash: <strong class="cash-val" id="cash-total-display">₹0</strong></span>
-                    <span>Online: <strong class="online-val" id="online-total-display">₹0</strong></span>
-                </div>
-                <div class="grand-total-row">
-                    <span class="grand-total-label">Grand Total (Received)</span>
-                    <span class="grand-total-value" id="grand-total-display">₹0</span>
-                </div>
-            </div>
-
-            <!-- Dynamic Balance Due (Short) / Excess / Settled Box -->
-            <div id="balance-box" class="balance-box settled">
-                <div class="balance-info">
-                    <div id="balance-title" class="balance-title">Balance Due</div>
-                    <div id="balance-sub" class="balance-sub">Bill: ₹0 | Recv: ₹0</div>
-                </div>
-                <div id="balance-amount" class="balance-amount">₹0</div>
-            </div>
-
-            <!-- Save Entry Button anchored at bottom -->
-            <button type="button" class="btn-save" onclick="openSaveModal()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                    <polyline points="7 3 7 8 15 8"></polyline>
-                </svg>
-                <span>Save Entry</span>
-            </button>
-        </section>
-
-        <!-- COLUMN 3: Saved Entries + Quick Calculator -->
-        <div class="right-column">
-            
-            <!-- Top Right Card: Saved Entries with Date Filter, Search, Share, Print & CSV -->
-            <section class="card history-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <span class="section-title-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="9"></circle>
-                                <polyline points="12 7 12 12 15 14"></polyline>
-                            </svg>
-                        </span>
-                        <span>Saved Entries</span>
-                        <span id="entry-count-badge" class="entry-count-badge">0</span>
-                    </div>
-                    <div id="history-actions-bar" class="history-actions-bar hidden">
-                        <button type="button" class="btn-tool btn-tool-share" onclick="openShareSummaryModal()" title="Share or copy daily summary">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="18" cy="5" r="3"></circle>
-                                <circle cx="6" cy="12" r="3"></circle>
-                                <circle cx="18" cy="19" r="3"></circle>
-                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                            </svg>
-                            <span>Share</span>
-                        </button>
-                        <button type="button" class="btn-tool btn-tool-print" onclick="printSummaryReport()" title="Print summary sheet">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                                <rect x="6" y="14" width="12" height="8"></rect>
-                            </svg>
-                            <span>Print</span>
-                        </button>
-                        <button type="button" class="btn-tool btn-tool-csv" onclick="exportEntriesToCSV()" title="Download saved entries as Excel/CSV">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                            </svg>
-                            <span>CSV</span>
-                        </button>
-                        <button type="button" id="clear-history-btn" class="btn-clear-history" onclick="openClearHistoryModal()">
-                            Clear All
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Daily Date Filter + Name Search Toolbar -->
-                <div id="filter-toolbar" class="filter-toolbar hidden">
-                    <div class="date-pills">
-                        <button type="button" class="date-pill active" id="pill-all" onclick="setDateFilter('all')">All</button>
-                        <button type="button" class="date-pill" id="pill-today" onclick="setDateFilter('today')">Today</button>
-                        <button type="button" class="date-pill" id="pill-yesterday" onclick="setDateFilter('yesterday')">Yesterday</button>
-                        <input type="date" id="custom-date-picker" class="custom-date-input" onchange="handleCustomDateChange(this.value)" title="Filter by specific date">
-                    </div>
-                    <div class="search-box-wrap">
-                        <input type="text" id="history-search-input" class="search-input" placeholder="Search name..." oninput="handleHistorySearch(this.value)">
-                        <button type="button" id="search-clear-btn" class="search-clear-btn hidden" onclick="clearHistorySearch()" title="Clear search">✕</button>
-                    </div>
-                </div>
-
-                <!-- Summary Totals Strip -->
-                <div id="daily-summary-bar" class="daily-summary-bar hidden">
-                    <div class="summary-chip-group">
-                        <span class="summary-chip">Cash: <strong class="cash" id="sum-cash-display">₹0</strong></span>
-                        <span class="summary-chip">Online: <strong class="online" id="sum-online-display">₹0</strong></span>
-                        <span id="sum-short-wrap" class="summary-chip hidden">Short: <strong class="short" id="sum-short-display">₹0</strong></span>
-                    </div>
-                    <div class="summary-total-pill" id="sum-grand-display">Total: ₹0</div>
-                </div>
-
-                <div class="history-body">
-                    <div id="history-list" class="history-list"></div>
-                    <div id="empty-history" class="empty-state">
-                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-                            <line x1="7" y1="9" x2="17" y2="9"></line>
-                            <line x1="7" y1="13" x2="13" y2="13"></line>
-                        </svg>
-                        <div class="empty-state-title" id="empty-state-title">No entries saved yet</div>
-                        <div class="empty-state-sub" id="empty-state-sub">Count your cash and click Save Entry.</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Bottom Right Card: Quick Calculator -->
-            <section class="card calc-card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <span class="section-title-icon">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
-                                <line x1="8" y1="6" x2="16" y2="6"></line>
-                                <line x1="8" y1="11" x2="8" y2="11"></line>
-                                <line x1="12" y1="11" x2="12" y2="11"></line>
-                                <line x1="16" y1="11" x2="16" y2="11"></line>
-                                <line x1="8" y1="15" x2="8" y2="15"></line>
-                                <line x1="12" y1="15" x2="12" y2="15"></line>
-                                <line x1="16" y1="15" x2="16" y2="15"></line>
-                            </svg>
-                        </span>
-                        <span>Quick Calculator</span>
-                    </div>
-                    <div class="calc-header-actions">
-                        <button type="button" class="btn-use-calc" onclick="copyCalcToOnline()" title="Copy calculator result to Online payment field">
-                            Use in Online
-                        </button>
-                        <button type="button" class="btn-use-calc btn-use-bill" onclick="copyCalcToBill()" title="Copy calculator result to To Collect (Bill) field">
-                            Use in Bill
-                        </button>
-                    </div>
-                </div>
-
-                <div class="calc-body">
-                    <!-- Output Window -->
-                    <div class="calc-display-box" onclick="focusCalcInput()">
-                        <div class="calc-expr-row">
-                            <span class="calc-badge">OUTPUT</span>
-                            <div id="calc-history-line" class="calc-history-line"></div>
-                        </div>
-                        <input type="text" id="calc-input" inputmode="decimal" class="calc-input-field" placeholder="0" autocomplete="off" spellcheck="false">
-                        <div id="calc-live-preview" class="calc-live-preview"></div>
-                    </div>
-
-                    <!-- Operator-Only Keypad -->
-                    <div class="operator-grid">
-                        <button type="button" class="op-btn op-btn-danger" onclick="clearCalc()" title="Clear (Esc)">C</button>
-                        <button type="button" class="op-btn" onclick="backspaceCalc()" title="Backspace">⌫</button>
-                        <button type="button" class="op-btn op-btn-symbol" onclick="applyPercent()" title="Percent (%)">%</button>
-                        <button type="button" class="op-btn op-btn-symbol" onclick="appendCalcOp('÷')" title="Divide (/)">÷</button>
-
-                        <button type="button" class="op-btn op-btn-symbol" onclick="applySquareRoot()" title="Square Root">√</button>
-                        <button type="button" class="op-btn op-btn-symbol" onclick="appendCalcOp('×')" title="Multiply (*)">×</button>
-                        <button type="button" class="op-btn op-btn-symbol" onclick="appendCalcOp('-')" title="Subtract (-)">−</button>
-                        <button type="button" class="op-btn op-btn-symbol" onclick="appendCalcOp('+')" title="Add (+)">+</button>
-
-                        <button type="button" class="op-btn" onclick="appendCalcText('00')" title="Double Zero">00</button>
-                        <button type="button" class="op-btn" onclick="appendCalcText('.')" title="Decimal Point">.</button>
-                        <button type="button" class="op-btn op-btn-equals" onclick="evaluateCalc()" title="Calculate (Enter)">=</button>
-                    </div>
-                </div>
-            </section>
-
-        </div>
-    </main>
-
-    <!-- Hidden Print Layout -->
-    <div id="print-area"></div>
-
-    <!-- Save With Name Modal -->
-    <div id="save-modal" class="modal-backdrop" onclick="if(event.target === this) closeSaveModal()">
-        <div class="modal-box">
-            <h3 class="modal-title">Save Entry</h3>
-            <p class="modal-desc">Confirm or enter the client/sender name for this <strong id="modal-total-badge">₹0</strong> entry.</p>
-            <input type="text" id="modal-name-input" class="text-input" placeholder="Enter name (e.g., John Doe)" autocomplete="off">
-            <div class="modal-actions">
-                <button type="button" class="btn-modal-cancel" onclick="closeSaveModal()">Cancel</button>
-                <button type="button" class="btn-modal-confirm" onclick="confirmSaveEntry()">Save Entry</button>
-            </div>
-        </div>
+  <section class="card" data-pane="calc" aria-label="Calculator">
+   <div class="card-h">Quick calculator</div>
+   <div class="calc">
+    <div class="screen"><small id="hist"></small><input id="ci" inputmode="decimal" placeholder="0" autocomplete="off" aria-label="Calculator expression"><div class="live" id="live"></div></div>
+    <div class="keys">
+     <button class="c" data-k="C">C</button><button data-k="B" aria-label="Backspace">⌫</button><button class="op" data-k="%">%</button><button class="op" data-k="÷">÷</button>
+     <button class="op" data-k="√">√</button><button class="op" data-k="×">×</button><button class="op" data-k="-">−</button><button class="op" data-k="+">+</button>
+     <button data-k="00">00</button><button data-k=".">.</button><button class="eq" data-k="=" style="grid-column:span 2">=</button>
     </div>
-
-    <!-- Share / Copy Summary Modal -->
-    <div id="share-modal" class="modal-backdrop" onclick="if(event.target === this) closeShareModal()">
-        <div class="modal-box">
-            <h3 class="modal-title">COD Collection Summary</h3>
-            <p class="modal-desc">Ready to copy or share via WhatsApp, Telegram, or Email:</p>
-            <div id="summary-preview-box" class="summary-preview-box"></div>
-            <div class="modal-actions">
-                <button type="button" class="btn-modal-cancel" onclick="closeShareModal()">Close</button>
-                <button type="button" class="btn-modal-cancel" onclick="copySummaryToClipboard()">Copy Text</button>
-                <button type="button" class="btn-modal-confirm" onclick="triggerNativeShare()">Share</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Clear All History Modal -->
-    <div id="clear-modal" class="modal-backdrop" onclick="if(event.target === this) closeClearHistoryModal()">
-        <div class="modal-box">
-            <h3 class="modal-title">Clear All History?</h3>
-            <p class="modal-desc">This will permanently remove all saved COD entries from this device.</p>
-            <div class="modal-actions">
-                <button type="button" class="btn-modal-cancel" onclick="closeClearHistoryModal()">Cancel</button>
-                <button type="button" class="btn-modal-danger" onclick="executeClearHistory()">Delete All</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Install App Fallback Instructions Modal -->
-    <div id="install-modal" class="modal-backdrop" onclick="if(event.target === this) closeInstallModal()">
-        <div class="modal-box">
-            <h3 class="modal-title">Install COD Cash Counter</h3>
-            <p class="modal-desc">Install this app on your phone or computer for full-screen access and offline use:</p>
-            <div class="install-steps">
-                <div><strong>1. Android / Chrome / Edge:</strong> Tap the browser menu (<strong>⋮</strong>) and choose <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.</div>
-                <div><strong>2. iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> icon at the bottom and tap <strong>"Add to Home Screen"</strong>.</div>
-                <div><strong>3. Desktop (Chrome / Edge):</strong> Click the <strong>Install icon</strong> on the right side of the address bar.</div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn-modal-confirm" onclick="closeInstallModal()">Got It</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-        <span id="toast-msg">Entry Saved!</span>
-    </div>
-
-    <script>
-        /* =========================================================
-           1. CASH, BILL & ONLINE DENOMINATION COUNTER LOGIC
-           ========================================================= */
-        const DENOMINATIONS = [500, 200, 100, 50, 20, 10, 5, 2, 1];
-        const STORAGE_KEY = 'codCashCounterHistory_v2';
-
-        let counts = {};
-        let billAmount = 0;
-        let onlineAmount = 0;
-        let cashTotal = 0;
-        let grandTotal = 0;
-        let history = [];
-        let searchQuery = '';
-        let dateFilterMode = 'all'; // 'all' | 'today' | 'yesterday' | 'custom'
-        let customDateISO = '';
-
-        function getLocalISODate(dateObj = new Date()) {
-            const y = dateObj.getFullYear();
-            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const d = String(dateObj.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
-        }
-
-        function formatINR(amount) {
-            return new Intl.NumberFormat('en-IN', {
-                style: 'currency',
-                currency: 'INR',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2
-            }).format(amount);
-        }
-
-        function initDenominationRows() {
-            const listEl = document.getElementById('denom-list');
-            listEl.innerHTML = '';
-
-            DENOMINATIONS.forEach((denom, index) => {
-                counts[denom] = 0;
-
-                const row = document.createElement('div');
-                row.className = 'denom-row';
-                row.innerHTML = `
-                    <div class="denom-label">₹ ${denom}</div>
-                    <div class="denom-times">×</div>
-                    <input
-                        type="number"
-                        inputmode="numeric"
-                        min="0"
-                        onwheel="this.blur()"
-                        id="denom-input-${denom}"
-                        data-index="${index}"
-                        class="denom-input"
-                        placeholder="0"
-                        oninput="handleCashInput(${denom}, this.value)"
-                    >
-                    <div class="denom-subtotal" id="denom-sub-${denom}">₹0</div>
-                `;
-                listEl.appendChild(row);
-
-                const inputEl = row.querySelector('input');
-                inputEl.addEventListener('keydown', (e) => handleDenomKeyNav(e, index));
-            });
-
-            const billInput = document.getElementById('bill-amount');
-            billInput.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowDown' || e.key === 'Enter') {
-                    e.preventDefault();
-                    const firstInput = document.getElementById(`denom-input-${DENOMINATIONS[0]}`);
-                    if (firstInput) {
-                        firstInput.focus();
-                        firstInput.select();
-                    }
-                }
-            });
-
-            const onlineInput = document.getElementById('online-amount');
-            onlineInput.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    const lastDenom = DENOMINATIONS[DENOMINATIONS.length - 1];
-                    const target = document.getElementById(`denom-input-${lastDenom}`);
-                    if (target) {
-                        target.focus();
-                        target.select();
-                    }
-                }
-            });
-        }
-
-        function handleDenomKeyNav(e, index) {
-            if (e.key === 'ArrowDown' || e.key === 'Enter') {
-                e.preventDefault();
-                if (index + 1 < DENOMINATIONS.length) {
-                    const nextDenom = DENOMINATIONS[index + 1];
-                    const nextInput = document.getElementById(`denom-input-${nextDenom}`);
-                    if (nextInput) {
-                        nextInput.focus();
-                        nextInput.select();
-                    }
-                } else {
-                    const onlineInput = document.getElementById('online-amount');
-                    if (onlineInput) {
-                        onlineInput.focus();
-                        onlineInput.select();
-                    }
-                }
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                if (index - 1 >= 0) {
-                    const prevDenom = DENOMINATIONS[index - 1];
-                    const prevInput = document.getElementById(`denom-input-${prevDenom}`);
-                    if (prevInput) {
-                        prevInput.focus();
-                        prevInput.select();
-                    }
-                } else {
-                    const billInput = document.getElementById('bill-amount');
-                    if (billInput) {
-                        billInput.focus();
-                        billInput.select();
-                    }
-                }
-            }
-        }
-
-        function handleCashInput(denom, rawValue) {
-            let qty = parseInt(rawValue, 10);
-            if (isNaN(qty) || qty < 0) qty = 0;
-            counts[denom] = qty;
-
-            const sub = qty * denom;
-            document.getElementById(`denom-sub-${denom}`).textContent = formatINR(sub);
-            recalculateTotals();
-        }
-
-        function handleBillInput(rawValue) {
-            let val = parseFloat(rawValue);
-            if (isNaN(val) || val < 0) val = 0;
-            billAmount = val;
-            recalculateTotals();
-        }
-
-        function handleOnlineInput(rawValue) {
-            let val = parseFloat(rawValue);
-            if (isNaN(val) || val < 0) val = 0;
-            onlineAmount = val;
-            recalculateTotals();
-        }
-
-        function recalculateTotals() {
-            cashTotal = DENOMINATIONS.reduce((acc, d) => acc + (counts[d] * d), 0);
-            grandTotal = Math.round((cashTotal + onlineAmount) * 100) / 100;
-
-            document.getElementById('cash-total-display').textContent = formatINR(cashTotal);
-            document.getElementById('online-total-display').textContent = formatINR(onlineAmount);
-            document.getElementById('grand-total-display').textContent = formatINR(grandTotal);
-
-            const balanceBox = document.getElementById('balance-box');
-            const balanceTitle = document.getElementById('balance-title');
-            const balanceSub = document.getElementById('balance-sub');
-            const balanceAmt = document.getElementById('balance-amount');
-
-            balanceSub.textContent = `Bill: ${formatINR(billAmount)} | Recv: ${formatINR(grandTotal)}`;
-
-            const diff = Math.round((billAmount - grandTotal) * 100) / 100;
-
-            if (billAmount > 0 && diff > 0) {
-                balanceBox.className = 'balance-box short';
-                balanceTitle.textContent = 'Balance Due (Short)';
-                balanceAmt.textContent = formatINR(diff);
-            } else if (billAmount > 0 && diff < 0) {
-                balanceBox.className = 'balance-box excess';
-                balanceTitle.textContent = 'Excess (Change to Return)';
-                balanceAmt.textContent = formatINR(Math.abs(diff));
-            } else if (billAmount > 0 && diff === 0) {
-                balanceBox.className = 'balance-box excess';
-                balanceTitle.textContent = 'Exact Match (Settled)';
-                balanceAmt.textContent = '₹0';
-            } else {
-                balanceBox.className = 'balance-box settled';
-                balanceTitle.textContent = 'Balance Due';
-                balanceAmt.textContent = '₹0';
-            }
-        }
-
-        function clearForm() {
-            document.getElementById('entry-name').value = '';
-            document.getElementById('bill-amount').value = '';
-            document.getElementById('online-amount').value = '';
-            billAmount = 0;
-            onlineAmount = 0;
-
-            DENOMINATIONS.forEach(d => {
-                counts[d] = 0;
-                const inp = document.getElementById(`denom-input-${d}`);
-                if (inp) inp.value = '';
-                const sub = document.getElementById(`denom-sub-${d}`);
-                if (sub) sub.textContent = '₹0';
-            });
-
-            recalculateTotals();
-            showToast('Form cleared');
-        }
-
-        /* =========================================================
-           2. SAVE MODAL, DAILY DATE FILTER, SEARCH, PRINT & SHARE
-           ========================================================= */
-        function getEntryISODate(item) {
-            if (item.dateISO) return item.dateISO;
-            if (item.id && typeof item.id === 'number') {
-                return getLocalISODate(new Date(item.id));
-            }
-            return '';
-        }
-
-        function openSaveModal() {
-            if (grandTotal <= 0 && billAmount <= 0) {
-                showToast('Enter cash, online, or bill amount first');
-                return;
-            }
-
-            const existingName = document.getElementById('entry-name').value.trim();
-            const modal = document.getElementById('save-modal');
-            const modalInput = document.getElementById('modal-name-input');
-            const badge = document.getElementById('modal-total-badge');
-
-            badge.textContent = formatINR(grandTotal);
-            modalInput.value = existingName;
-            modalInput.classList.remove('input-error');
-
-            modal.classList.add('open');
-            setTimeout(() => {
-                modalInput.focus();
-                modalInput.select();
-            }, 30);
-        }
-
-        function closeSaveModal() {
-            document.getElementById('save-modal').classList.remove('open');
-        }
-
-        function confirmSaveEntry() {
-            const modalInput = document.getElementById('modal-name-input');
-            const name = modalInput.value.trim();
-
-            if (!name) {
-                modalInput.classList.add('input-error');
-                modalInput.focus();
-                return;
-            }
-
-            const breakdown = {};
-            [...DENOMINATIONS].reverse().forEach(d => {
-                if (counts[d] > 0) breakdown[d] = counts[d];
-            });
-
-            const now = new Date();
-            const formattedTime = now.toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            }) + ', ' + now.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-            }).toLowerCase();
-
-            const entry = {
-                id: Date.now(),
-                dateISO: getLocalISODate(now),
-                name: name,
-                timestamp: formattedTime,
-                billTotal: billAmount,
-                cashTotal: cashTotal,
-                onlineTotal: onlineAmount,
-                grandTotal: grandTotal,
-                breakdown: breakdown
-            };
-
-            history.unshift(entry);
-            saveHistoryToStorage();
-            renderHistory();
-            closeSaveModal();
-            clearForm();
-            showToast(`Saved entry for ${name}`);
-        }
-
-        document.getElementById('modal-name-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                confirmSaveEntry();
-            } else if (e.key === 'Escape') {
-                closeSaveModal();
-            }
-        });
-
-        function loadHistoryFromStorage() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                history = raw ? JSON.parse(raw) : [];
-            } catch (err) {
-                history = [];
-            }
-            renderHistory();
-        }
-
-        function saveHistoryToStorage() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-            } catch (err) {}
-        }
-
-        function deleteEntry(id) {
-            history = history.filter(item => item.id !== id);
-            saveHistoryToStorage();
-            renderHistory();
-            showToast('Entry removed');
-        }
-
-        function openClearHistoryModal() {
-            document.getElementById('clear-modal').classList.add('open');
-        }
-
-        function closeClearHistoryModal() {
-            document.getElementById('clear-modal').classList.remove('open');
-        }
-
-        function executeClearHistory() {
-            history = [];
-            searchQuery = '';
-            dateFilterMode = 'all';
-            customDateISO = '';
-            const searchInput = document.getElementById('history-search-input');
-            if (searchInput) searchInput.value = '';
-            const datePicker = document.getElementById('custom-date-picker');
-            if (datePicker) {
-                datePicker.value = '';
-                datePicker.classList.remove('active');
-            }
-            updateDatePillUI();
-            saveHistoryToStorage();
-            renderHistory();
-            closeClearHistoryModal();
-            showToast('All history cleared');
-        }
-
-        function setDateFilter(mode) {
-            dateFilterMode = mode;
-            if (mode !== 'custom') {
-                customDateISO = '';
-                const datePicker = document.getElementById('custom-date-picker');
-                if (datePicker) {
-                    datePicker.value = '';
-                    datePicker.classList.remove('active');
-                }
-            }
-            updateDatePillUI();
-            renderHistory();
-        }
-
-        function handleCustomDateChange(isoVal) {
-            if (!isoVal) {
-                setDateFilter('all');
-                return;
-            }
-            dateFilterMode = 'custom';
-            customDateISO = isoVal;
-            const datePicker = document.getElementById('custom-date-picker');
-            if (datePicker) datePicker.classList.add('active');
-            updateDatePillUI();
-            renderHistory();
-        }
-
-        function updateDatePillUI() {
-            ['all', 'today', 'yesterday'].forEach(key => {
-                const pill = document.getElementById(`pill-${key}`);
-                if (pill) {
-                    pill.classList.toggle('active', dateFilterMode === key);
-                }
-            });
-        }
-
-        function handleHistorySearch(val) {
-            searchQuery = val.trim().toLowerCase();
-            const clearBtn = document.getElementById('search-clear-btn');
-            if (clearBtn) {
-                clearBtn.classList.toggle('hidden', searchQuery.length === 0);
-            }
-            renderHistory();
-        }
-
-        function clearHistorySearch() {
-            searchQuery = '';
-            const searchInput = document.getElementById('history-search-input');
-            if (searchInput) {
-                searchInput.value = '';
-                searchInput.focus();
-            }
-            document.getElementById('search-clear-btn').classList.add('hidden');
-            renderHistory();
-        }
-
-        function getFilteredHistory() {
-            const todayISO = getLocalISODate();
-            const yestDate = new Date();
-            yestDate.setDate(yestDate.getDate() - 1);
-            const yesterdayISO = getLocalISODate(yestDate);
-
-            return history.filter(item => {
-                const itemDate = getEntryISODate(item);
-
-                if (dateFilterMode === 'today' && itemDate !== todayISO) return false;
-                if (dateFilterMode === 'yesterday' && itemDate !== yesterdayISO) return false;
-                if (dateFilterMode === 'custom' && customDateISO && itemDate !== customDateISO) return false;
-
-                if (searchQuery) {
-                    const nameMatch = (item.name || '').toLowerCase().includes(searchQuery);
-                    const timeMatch = (item.timestamp || '').toLowerCase().includes(searchQuery);
-                    if (!nameMatch && !timeMatch) return false;
-                }
-                return true;
-            });
-        }
-
-        function getActiveFilterLabel() {
-            if (dateFilterMode === 'today') return `Today (${getLocalISODate()})`;
-            if (dateFilterMode === 'yesterday') {
-                const d = new Date();
-                d.setDate(d.getDate() - 1);
-                return `Yesterday (${getLocalISODate(d)})`;
-            }
-            if (dateFilterMode === 'custom' && customDateISO) return `Date: ${customDateISO}`;
-            return 'All Saved Entries';
-        }
-
-        function escapeHTML(str) {
-            return String(str).replace(/[&<>"']/g, (m) => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#39;'
-            }[m]));
-        }
-
-        function renderHistory() {
-            const listEl = document.getElementById('history-list');
-            const emptyEl = document.getElementById('empty-history');
-            const emptyTitle = document.getElementById('empty-state-title');
-            const emptySub = document.getElementById('empty-state-sub');
-            const actionsBar = document.getElementById('history-actions-bar');
-            const filterToolbar = document.getElementById('filter-toolbar');
-            const summaryBar = document.getElementById('daily-summary-bar');
-            const countBadge = document.getElementById('entry-count-badge');
-
-            listEl.innerHTML = '';
-
-            if (history.length === 0) {
-                countBadge.textContent = '0';
-                emptyEl.classList.remove('hidden');
-                emptyTitle.textContent = 'No entries saved yet';
-                emptySub.textContent = 'Count your cash and click Save Entry.';
-                actionsBar.classList.add('hidden');
-                filterToolbar.classList.add('hidden');
-                summaryBar.classList.add('hidden');
-                return;
-            }
-
-            actionsBar.classList.remove('hidden');
-            filterToolbar.classList.remove('hidden');
-
-            const filtered = getFilteredHistory();
-            const isFiltered = dateFilterMode !== 'all' || searchQuery.length > 0;
-            countBadge.textContent = isFiltered ? `${filtered.length}/${history.length}` : `${history.length}`;
-
-            let sumCash = 0;
-            let sumOnline = 0;
-            let sumGrand = 0;
-            let sumShort = 0;
-
-            filtered.forEach(item => {
-                sumCash += Number(item.cashTotal || 0);
-                sumOnline += Number(item.onlineTotal || 0);
-                sumGrand += Number(item.grandTotal || 0);
-                if (item.billTotal && item.billTotal > item.grandTotal) {
-                    sumShort += (item.billTotal - item.grandTotal);
-                }
-            });
-
-            sumCash = Math.round(sumCash * 100) / 100;
-            sumOnline = Math.round(sumOnline * 100) / 100;
-            sumGrand = Math.round(sumGrand * 100) / 100;
-            sumShort = Math.round(sumShort * 100) / 100;
-
-            summaryBar.classList.remove('hidden');
-            document.getElementById('sum-cash-display').textContent = formatINR(sumCash);
-            document.getElementById('sum-online-display').textContent = formatINR(sumOnline);
-            document.getElementById('sum-grand-display').textContent = (isFiltered ? 'Filtered Total: ' : 'Total: ') + formatINR(sumGrand);
-
-            const shortWrap = document.getElementById('sum-short-wrap');
-            if (sumShort > 0) {
-                shortWrap.classList.remove('hidden');
-                document.getElementById('sum-short-display').textContent = formatINR(sumShort);
-            } else {
-                shortWrap.classList.add('hidden');
-            }
-
-            if (filtered.length === 0) {
-                emptyEl.classList.remove('hidden');
-                emptyTitle.textContent = 'No entries match this filter';
-                emptySub.textContent = 'Switch date filter to "All" or clear search.';
-                return;
-            }
-
-            emptyEl.classList.add('hidden');
-
-            filtered.forEach(item => {
-                const notesList = Object.entries(item.breakdown || {})
-                    .map(([denom, qty]) => `${qty}×₹${denom}`)
-                    .join(', ');
-                const breakdownText = notesList || (item.cashTotal > 0 ? 'Cash' : 'Online Only');
-
-                let diffBadge = '';
-                if (item.billTotal && item.billTotal > 0) {
-                    const diff = Math.round((item.billTotal - item.grandTotal) * 100) / 100;
-                    if (diff > 0) {
-                        diffBadge = `<span>Short: <strong class="short">${formatINR(diff)}</strong></span>`;
-                    }
-                }
-
-                const card = document.createElement('div');
-                card.className = 'history-item';
-                card.innerHTML = `
-                    <div class="history-item-top">
-                        <div class="entry-user-line">
-                            <span class="entry-user-name">${escapeHTML(item.name)}</span>
-                            <span class="entry-time">${escapeHTML(item.timestamp)}</span>
-                        </div>
-                        <button type="button" class="btn-delete-entry" onclick="deleteEntry(${item.id})" title="Delete entry">✕</button>
-                    </div>
-                    <div class="history-item-mid">
-                        <div class="entry-inline-splits">
-                            <span>Cash: <strong class="cash">${formatINR(item.cashTotal)}</strong></span>
-                            <span>Online: <strong class="online">${formatINR(item.onlineTotal)}</strong></span>
-                            ${diffBadge}
-                        </div>
-                        <div class="entry-grand">${formatINR(item.grandTotal)}</div>
-                    </div>
-                    <div class="entry-breakdown" title="${escapeHTML(breakdownText)}">${escapeHTML(breakdownText)}</div>
-                `;
-                listEl.appendChild(card);
-            });
-        }
-
-        /* =========================================================
-           3. QUICK SHARE / COPY & PRINT SUMMARY REPORT
-           ========================================================= */
-        function buildSummaryText() {
-            const rows = getFilteredHistory();
-            let totCash = 0, totOnline = 0, totGrand = 0, totShort = 0;
-
-            const itemLines = rows.map((item, idx) => {
-                const cash = Number(item.cashTotal || 0);
-                const online = Number(item.onlineTotal || 0);
-                const grand = Number(item.grandTotal || 0);
-                const shortAmt = (item.billTotal && item.billTotal > grand) ? (item.billTotal - grand) : 0;
-
-                totCash += cash;
-                totOnline += online;
-                totGrand += grand;
-                totShort += shortAmt;
-
-                const shortTag = shortAmt > 0 ? ` | Short: ${formatINR(shortAmt)}` : '';
-                return `${idx + 1}. ${item.name} — ${formatINR(grand)} (Cash: ${formatINR(cash)}, Online: ${formatINR(online)}${shortTag})`;
-            });
-
-            const header = [
-                `📊 COD CASH COUNTER SUMMARY`,
-                `Filter: ${getActiveFilterLabel()}`,
-                `Entries: ${rows.length}`,
-                `--------------------------------`,
-                `Total Cash: ${formatINR(totCash)}`,
-                `Total Online: ${formatINR(totOnline)}`,
-                totShort > 0 ? `Total Short/Due: ${formatINR(totShort)}` : null,
-                `GRAND TOTAL: ${formatINR(totGrand)}`,
-                `--------------------------------`,
-                ...itemLines
-            ].filter(Boolean);
-
-            return header.join('\n');
-        }
-
-        function openShareSummaryModal() {
-            const rows = getFilteredHistory();
-            if (rows.length === 0) {
-                showToast('No entries to share');
-                return;
-            }
-            document.getElementById('summary-preview-box').textContent = buildSummaryText();
-            document.getElementById('share-modal').classList.add('open');
-        }
-
-        function closeShareModal() {
-            document.getElementById('share-modal').classList.remove('open');
-        }
-
-        async function copySummaryToClipboard() {
-            const text = buildSummaryText();
-            try {
-                await navigator.clipboard.writeText(text);
-                showToast('Summary copied to clipboard!');
-            } catch (err) {
-                const ta = document.createElement('textarea');
-                ta.value = text;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                showToast('Summary copied!');
-            }
-        }
-
-        async function triggerNativeShare() {
-            const text = buildSummaryText();
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: 'COD Cash Counter Summary',
-                        text: text
-                    });
-                    closeShareModal();
-                } catch (err) {
-                    // User cancelled share dialog
-                }
-            } else {
-                await copySummaryToClipboard();
-            }
-        }
-
-        function printSummaryReport() {
-            const rows = getFilteredHistory();
-            if (rows.length === 0) {
-                showToast('No entries to print');
-                return;
-            }
-
-            let totCash = 0, totOnline = 0, totGrand = 0, totShort = 0;
-            const tableRowsHTML = rows.map((item, idx) => {
-                const bill = Number(item.billTotal || 0);
-                const cash = Number(item.cashTotal || 0);
-                const online = Number(item.onlineTotal || 0);
-                const grand = Number(item.grandTotal || 0);
-                const shortAmt = bill > grand ? Math.round((bill - grand) * 100) / 100 : 0;
-
-                totCash += cash;
-                totOnline += online;
-                totGrand += grand;
-                totShort += shortAmt;
-
-                const notes = Object.entries(item.breakdown || {})
-                    .map(([d, q]) => `${q}×₹${d}`)
-                    .join(', ') || (cash > 0 ? 'Cash' : 'Online');
-
-                return `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td>${escapeHTML(item.name)}</td>
-                        <td>${escapeHTML(item.timestamp)}</td>
-                        <td class="num">${bill > 0 ? formatINR(bill) : '-'}</td>
-                        <td class="num">${formatINR(cash)}</td>
-                        <td class="num">${formatINR(online)}</td>
-                        <td class="num"><strong>${formatINR(grand)}</strong></td>
-                        <td class="num">${shortAmt > 0 ? formatINR(shortAmt) : '-'}</td>
-                        <td>${escapeHTML(notes)}</td>
-                    </tr>
-                `;
-            }).join('');
-
-            const printArea = document.getElementById('print-area');
-            printArea.innerHTML = `
-                <div class="print-header">
-                    <div>
-                        <div class="print-title">COD Cash Counter — Collection Report</div>
-                        <div class="print-meta">Filter: ${escapeHTML(getActiveFilterLabel())} | Entries: ${rows.length}</div>
-                    </div>
-                    <div class="print-meta">Printed: ${new Date().toLocaleString('en-IN')}</div>
-                </div>
-                <table class="print-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Client / Sender</th>
-                            <th>Date & Time</th>
-                            <th class="num">Bill</th>
-                            <th class="num">Cash</th>
-                            <th class="num">Online</th>
-                            <th class="num">Received</th>
-                            <th class="num">Short</th>
-                            <th>Notes Breakdown</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRowsHTML}
-                    </tbody>
-                </table>
-                <div class="print-totals">
-                    <span>Cash: ${formatINR(totCash)}</span>
-                    <span>Online: ${formatINR(totOnline)}</span>
-                    ${totShort > 0 ? `<span>Short: ${formatINR(totShort)}</span>` : ''}
-                    <span>Grand Total: ${formatINR(totGrand)}</span>
-                </div>
-            `;
-
-            window.print();
-        }
-
-        function exportEntriesToCSV() {
-            const rowsToExport = getFilteredHistory();
-            if (rowsToExport.length === 0) {
-                showToast('No entries to export');
-                return;
-            }
-
-            const headers = [
-                'Date & Time',
-                'Client / Sender Name',
-                'To Collect (Bill)',
-                'Cash Total',
-                'Online Total',
-                'Grand Total (Received)',
-                'Balance Due (Short)',
-                'Note Breakdown'
-            ];
-
-            const csvEscape = (val) => {
-                const str = String(val ?? '');
-                if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-                    return '"' + str.replace(/"/g, '""') + '"';
-                }
-                return str;
-            };
-
-            const lines = [headers.join(',')];
-
-            let totBill = 0, totCash = 0, totOnline = 0, totGrand = 0, totShort = 0;
-
-            rowsToExport.forEach(item => {
-                const bill = Number(item.billTotal || 0);
-                const cash = Number(item.cashTotal || 0);
-                const online = Number(item.onlineTotal || 0);
-                const grand = Number(item.grandTotal || 0);
-                const shortAmt = bill > grand ? Math.round((bill - grand) * 100) / 100 : 0;
-
-                totBill += bill;
-                totCash += cash;
-                totOnline += online;
-                totGrand += grand;
-                totShort += shortAmt;
-
-                const notes = Object.entries(item.breakdown || {})
-                    .map(([d, q]) => `${q}xRs.${d}`)
-                    .join(' | ') || (cash > 0 ? 'Cash' : 'Online Only');
-
-                lines.push([
-                    csvEscape(item.timestamp),
-                    csvEscape(item.name),
-                    bill,
-                    cash,
-                    online,
-                    grand,
-                    shortAmt,
-                    csvEscape(notes)
-                ].join(','));
-            });
-
-            lines.push([
-                '',
-                'TOTAL',
-                Math.round(totBill * 100) / 100,
-                Math.round(totCash * 100) / 100,
-                Math.round(totOnline * 100) / 100,
-                Math.round(totGrand * 100) / 100,
-                Math.round(totShort * 100) / 100,
-                ''
-            ].join(','));
-
-            const csvBlob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(csvBlob);
-            const a = document.createElement('a');
-            const dateStr = getLocalISODate();
-            a.href = url;
-            a.download = `COD_Entries_${dateStr}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            showToast(`Exported ${rowsToExport.length} entries to CSV`);
-        }
-
-        /* =========================================================
-           4. OPERATOR-ONLY QUICK CALCULATOR + OUTPUT WINDOW
-           ========================================================= */
-        const calcInput = document.getElementById('calc-input');
-        const calcHistoryLine = document.getElementById('calc-history-line');
-        const calcLivePreview = document.getElementById('calc-live-preview');
-
-        function focusCalcInput() {
-            calcInput.focus();
-        }
-
-        function sanitizeExpression(raw) {
-            let expr = raw
-                .replace(/×/g, '*')
-                .replace(/÷/g, '/')
-                .replace(/−/g, '-')
-                .replace(/,/g, '')
-                .replace(/[^0-9+\-*/.%() ]/g, '');
-            return expr.trim();
-        }
-
-        function safeEvalMath(rawExpr) {
-            const cleaned = sanitizeExpression(rawExpr);
-            if (!cleaned) return null;
-
-            const trimmed = cleaned.replace(/[+\-*/.]+$/, '');
-            if (!trimmed) return null;
-
-            const withPercent = trimmed.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
-
-            if (!/^[0-9+\-*/.() ]+$/.test(withPercent)) return null;
-
-            try {
-                const result = Function('"use strict"; return (' + withPercent + ')')();
-                if (typeof result === 'number' && isFinite(result)) {
-                    return Math.round(result * 1000000) / 1000000;
-                }
-            } catch (e) {
-                return null;
-            }
-            return null;
-        }
-
-        function updateCalcLivePreview() {
-            const val = calcInput.value;
-            const res = safeEvalMath(val);
-            if (res !== null && /[+\-*/×÷%]/.test(val)) {
-                calcLivePreview.textContent = '= ' + res.toLocaleString('en-IN');
-            } else {
-                calcLivePreview.textContent = '';
-            }
-        }
-
-        calcInput.addEventListener('input', () => {
-            const pos = calcInput.selectionStart;
-            const formatted = calcInput.value
-                .replace(/\*/g, '×')
-                .replace(/\//g, '÷')
-                .replace(/[^0-9+\-×÷.%() ]/g, '');
-            if (formatted !== calcInput.value) {
-                calcInput.value = formatted;
-                calcInput.setSelectionRange(pos, pos);
-            }
-            updateCalcLivePreview();
-        });
-
-        calcInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === '=') {
-                e.preventDefault();
-                evaluateCalc();
-            } else if (e.key === 'Escape') {
-                e.preventDefault();
-                clearCalc();
-            }
-        });
-
-        function appendCalcOp(op) {
-            let val = calcInput.value.trim();
-            if (!val && op !== '-') return;
-            val = val.replace(/[+\-×÷]+$/, '');
-            calcInput.value = val + op;
-            updateCalcLivePreview();
-            calcInput.focus();
-        }
-
-        function appendCalcText(txt) {
-            calcInput.value += txt;
-            updateCalcLivePreview();
-            calcInput.focus();
-        }
-
-        function backspaceCalc() {
-            calcInput.value = calcInput.value.slice(0, -1);
-            updateCalcLivePreview();
-            calcInput.focus();
-        }
-
-        function clearCalc() {
-            calcInput.value = '';
-            calcHistoryLine.textContent = '';
-            calcLivePreview.textContent = '';
-            calcInput.focus();
-        }
-
-        function applyPercent() {
-            const current = safeEvalMath(calcInput.value);
-            if (current !== null) {
-                const pct = Math.round((current / 100) * 1000000) / 1000000;
-                calcHistoryLine.textContent = `${calcInput.value}% =`;
-                calcInput.value = String(pct);
-                calcLivePreview.textContent = '';
-            }
-            calcInput.focus();
-        }
-
-        function applySquareRoot() {
-            const current = safeEvalMath(calcInput.value);
-            if (current !== null && current >= 0) {
-                const root = Math.round(Math.sqrt(current) * 1000000) / 1000000;
-                calcHistoryLine.textContent = `√(${calcInput.value}) =`;
-                calcInput.value = String(root);
-                calcLivePreview.textContent = '';
-            }
-            calcInput.focus();
-        }
-
-        function evaluateCalc() {
-            const raw = calcInput.value.trim();
-            if (!raw) return;
-
-            const result = safeEvalMath(raw);
-            if (result !== null) {
-                calcHistoryLine.textContent = `${raw} =`;
-                calcInput.value = String(result);
-                calcLivePreview.textContent = '';
-            } else {
-                calcLivePreview.textContent = 'Invalid expression';
-            }
-            calcInput.focus();
-        }
-
-        function copyCalcToOnline() {
-            const result = safeEvalMath(calcInput.value);
-            if (result === null || result < 0) {
-                showToast('Calculate a valid positive amount first');
-                return;
-            }
-            const onlineInput = document.getElementById('online-amount');
-            onlineInput.value = result;
-            handleOnlineInput(result);
-            showToast(`Added ${formatINR(result)} to Online`);
-        }
-
-        function copyCalcToBill() {
-            const result = safeEvalMath(calcInput.value);
-            if (result === null || result < 0) {
-                showToast('Calculate a valid positive amount first');
-                return;
-            }
-            const billInput = document.getElementById('bill-amount');
-            billInput.value = result;
-            handleBillInput(result);
-            showToast(`Added ${formatINR(result)} to Bill`);
-        }
-
-        /* =========================================================
-           5. TOAST & INITIALIZATION
-           ========================================================= */
-        let toastTimer = null;
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            const msgEl = document.getElementById('toast-msg');
-            msgEl.textContent = message;
-            toast.classList.add('show');
-
-            if (toastTimer) clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2500);
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            initDenominationRows();
-            loadHistoryFromStorage();
-            recalculateTotals();
-            setupPWA();
-        });
-
-        /* =========================================================
-           6. PROGRESSIVE WEB APP (PWA) MANIFEST, ICONS & SERVICE WORKER
-           ========================================================= */
-        let deferredInstallPrompt = null;
-
-        function generateAppIconDataURL(size) {
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-
-            const radius = size * 0.22;
-            ctx.fillStyle = '#047857';
-            ctx.beginPath();
-            ctx.moveTo(radius, 0);
-            ctx.lineTo(size - radius, 0);
-            ctx.quadraticCurveTo(size, 0, size, radius);
-            ctx.lineTo(size, size - radius);
-            ctx.quadraticCurveTo(size, size, size - radius, size);
-            ctx.lineTo(radius, size);
-            ctx.quadraticCurveTo(0, size, 0, size - radius);
-            ctx.lineTo(0, radius);
-            ctx.quadraticCurveTo(0, 0, radius, 0);
-            ctx.closePath();
-            ctx.fill();
-
-            ctx.strokeStyle = 'rgba(167, 243, 208, 0.35)';
-            ctx.lineWidth = Math.max(2, size * 0.03);
-            ctx.beginPath();
-            ctx.arc(size / 2, size / 2, size * 0.36, 0, Math.PI * 2);
-            ctx.stroke();
-
-            ctx.fillStyle = '#ffffff';
-            ctx.font = `bold ${Math.round(size * 0.48)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('₹', size / 2, size * 0.53);
-
-            return canvas.toDataURL('image/png');
-        }
-
-        function setupPWA() {
-            try {
-                const icon192 = generateAppIconDataURL(192);
-                const icon512 = generateAppIconDataURL(512);
-
-                const appleIconLink = document.getElementById('apple-touch-icon');
-                if (appleIconLink) appleIconLink.href = icon192;
-
-                const faviconLink = document.getElementById('favicon-link');
-                if (faviconLink) faviconLink.href = icon192;
-
-                const startUrl = window.location.href.split('#')[0];
-                const manifestObj = {
-                    name: 'COD Cash Counter',
-                    short_name: 'COD Counter',
-                    description: 'Daily COD cash denomination counter, settlement & CSV export',
-                    start_url: startUrl,
-                    scope: './',
-                    display: 'standalone',
-                    orientation: 'any',
-                    background_color: '#f1f5f9',
-                    theme_color: '#047857',
-                    icons: [
-                        { src: icon192, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
-                        { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
-                    ]
-                };
-
-                const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/manifest+json' });
-                const manifestURL = URL.createObjectURL(manifestBlob);
-                const manifestLink = document.getElementById('dynamic-manifest');
-                if (manifestLink) manifestLink.href = manifestURL;
-            } catch (err) {}
-
-            if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
-                navigator.serviceWorker.register('./sw.js').catch(() => {});
-            }
-
-            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-                const installBtn = document.getElementById('install-app-btn');
-                if (installBtn) installBtn.classList.add('hidden');
-            }
-        }
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredInstallPrompt = e;
-            const installBtn = document.getElementById('install-app-btn');
-            if (installBtn) installBtn.classList.remove('hidden');
-        });
-
-        window.addEventListener('appinstalled', () => {
-            deferredInstallPrompt = null;
-            const installBtn = document.getElementById('install-app-btn');
-            if (installBtn) installBtn.classList.add('hidden');
-            closeInstallModal();
-            showToast('COD Cash Counter installed!');
-        });
-
-        async function handleInstallClick() {
-            if (deferredInstallPrompt) {
-                deferredInstallPrompt.prompt();
-                const choice = await deferredInstallPrompt.userChoice;
-                if (choice && choice.outcome === 'accepted') {
-                    deferredInstallPrompt = null;
-                }
-            } else {
-                document.getElementById('install-modal').classList.add('open');
-            }
-        }
-
-        function closeInstallModal() {
-            document.getElementById('install-modal').classList.remove('open');
-        }
-    </script>
+    <button class="use" id="toOnline">Use as online</button><button class="use" id="toBill">Use as bill</button>
+   </div>
+  </section>
+ </div>
+</main>
+
+<nav role="tablist" aria-label="Sections">
+ <button role="tab" data-t="count" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Count</button>
+ <button role="tab" data-t="history" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Entries</button>
+ <button role="tab" data-t="calc" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 12h.01M12 12h.01M15 12h.01M9 16h.01M12 16h.01M15 16h.01"/></svg>Calc</button>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const D=[500,200,100,50,20,10,5,2,1],KEY='codCashCounterHistory_v2';
+const $=id=>document.getElementById(id);
+let counts={},bill=0,online=0,cash=0,total=0,hist=[],filter='all',qs='',day='';
+const fmt=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',minimumFractionDigits:0,maximumFractionDigits:2}).format(n);
+const r2=n=>Math.round(n*100)/100;
+const iso=(d=new Date())=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2400)}
+
+/* Counter */
+function buildRows(){
+ $('denoms').innerHTML=D.map(d=>{counts[d]=0;return `<div class="row" id="r${d}"><div class="note">₹${d}</div>
+ <div class="step"><button type="button" data-d="${d}" data-s="-1" aria-label="Minus one ₹${d} note">−</button>
+ <input id="i${d}" type="number" inputmode="numeric" min="0" placeholder="0" aria-label="Number of ₹${d} notes or coins" data-d="${d}">
+ <button type="button" data-d="${d}" data-s="1" aria-label="Plus one ₹${d} note">+</button></div><div class="sub" id="s${d}">₹0</div></div>`}).join('');
+}
+function setQty(d,q){q=Math.max(0,parseInt(q,10)||0);counts[d]=q;const i=$('i'+d);if(document.activeElement!==i)i.value=q||'';
+ $('s'+d).textContent=fmt(q*d);$('r'+d).classList.toggle('on',q>0);calc()}
+function calc(){
+ cash=D.reduce((a,d)=>a+counts[d]*d,0);total=r2(cash+online);
+ $('gt').textContent=fmt(total);$('split').textContent=`Cash ${fmt(cash)} · Online ${fmt(online)}`;
+ const diff=r2(bill-total),b=$('bal');
+ if(bill>0&&diff>0){b.className='bal short';$('bt').textContent='Still to collect';$('ba').textContent=fmt(diff)}
+ else if(bill>0&&diff<0){b.className='bal excess';$('bt').textContent='Change to return';$('ba').textContent=fmt(-diff)}
+ else if(bill>0){b.className='bal excess';$('bt').textContent='Settled';$('ba').textContent='✓ Exact'}
+ else{b.className='bal settled';$('bt').textContent='Balance';$('ba').textContent='₹0'}
+}
+function clearForm(quiet){
+ ['name','bill','online'].forEach(i=>$(i).value='');bill=online=0;D.forEach(d=>{counts[d]=0;$('i'+d).value='';$('s'+d).textContent='₹0';$('r'+d).classList.remove('on')});
+ calc();if(!quiet)toast('Form cleared')}
+$('denoms').addEventListener('input',e=>{if(e.target.dataset.d)setQty(+e.target.dataset.d,e.target.value)});
+$('denoms').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setQty(+b.dataset.d,counts[b.dataset.d]+ +b.dataset.s)});
+$('denoms').addEventListener('keydown',e=>{if(!e.target.dataset.d||!['Enter','ArrowDown','ArrowUp'].includes(e.key))return;e.preventDefault();
+ const n=D.indexOf(+e.target.dataset.d)+(e.key==='ArrowUp'?-1:1);const t=n<0?$('bill'):n>=D.length?$('online'):$('i'+D[n]);t.focus();t.select()});
+$('bill').addEventListener('input',e=>{bill=Math.max(0,parseFloat(e.target.value)||0);calc()});
+$('online').addEventListener('input',e=>{online=Math.max(0,parseFloat(e.target.value)||0);calc()});
+$('name').addEventListener('input',e=>e.target.classList.remove('err'));
+$('reset').onclick=()=>clearForm();
+
+/* Save & history */
+function load(){try{hist=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){hist=[]}render()}
+function store(){try{localStorage.setItem(KEY,JSON.stringify(hist))}catch(e){toast('Storage full or blocked: entries may not persist')}}
+$('save').onclick=()=>{
+ if(total<=0&&bill<=0){toast('Enter cash, online or bill amount first');return}
+ const n=$('name').value.trim();
+ if(!n){$('name').classList.add('err');$('name').focus();$('name').scrollIntoView({block:'center'});toast('Add the client name to save');return}
+ const now=new Date(),bd={};[...D].reverse().forEach(d=>{if(counts[d]>0)bd[d]=counts[d]});
+ hist.unshift({id:Date.now(),dateISO:iso(now),name:n,billTotal:bill,cashTotal:cash,onlineTotal:online,grandTotal:total,breakdown:bd,
+  timestamp:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+', '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}).toLowerCase()});
+ store();render();clearForm(true);toast(`Saved entry for ${n}`)};
+const dateOf=i=>i.dateISO||iso(new Date(i.id));
+function filtered(){const t=iso(),y=new Date();y.setDate(y.getDate()-1);const yi=iso(y);
+ return hist.filter(i=>{const d=dateOf(i);if(filter==='today'&&d!==t)return false;if(filter==='yesterday'&&d!==yi)return false;if(filter==='date'&&d!==day)return false;
+  return !qs||(i.name||'').toLowerCase().includes(qs)})}
+const shortOf=i=>i.billTotal>i.grandTotal?r2(i.billTotal-i.grandTotal):0;
+const notes=i=>Object.entries(i.breakdown||{}).map(([d,q])=>`${q}×₹${d}`).join(', ')||(i.cashTotal>0?'Cash':'Online only');
+function render(){
+ const has=hist.length>0,f=filtered(),on=filter!=='all'||qs;
+ $('count').textContent=on?`${f.length}/${hist.length}`:hist.length;
+ ['acts','filters','sum'].forEach(i=>$(i).classList.toggle('hidden',!has));
+ $('empty').classList.toggle('hidden',f.length>0);
+ if(has&&!f.length)$('empty').innerHTML='<b>No entries match</b>Choose “All” or clear the search.';
+ else $('empty').innerHTML='<b>No entries yet</b>Count the cash, then tap Save entry.';
+ const s=f.reduce((a,i)=>({c:a.c+i.cashTotal,o:a.o+i.onlineTotal,g:a.g+i.grandTotal,s:a.s+shortOf(i)}),{c:0,o:0,g:0,s:0});
+ $('sum').innerHTML=`<span>Cash ${fmt(r2(s.c))}</span><span>Online ${fmt(r2(s.o))}</span>${s.s>0?`<span style="color:var(--red)">Short ${fmt(r2(s.s))}</span>`:''}<strong>${on?'Filtered total ':'Total '}${fmt(r2(s.g))}</strong>`;
+ $('list').innerHTML=f.map(i=>`<div class="item"><div class="item-t"><div><b>${esc(i.name)}</b><time>${esc(i.timestamp||'')}</time></div><button class="x" data-del="${i.id}" aria-label="Delete entry for ${esc(i.name)}">✕</button></div>
+ <div class="item-m"><span>Cash ${fmt(i.cashTotal)} · Online ${fmt(i.onlineTotal)} ${shortOf(i)?`<span class="chip">Short ${fmt(shortOf(i))}</span>`:''}</span><strong class="tot">${fmt(i.grandTotal)}</strong></div>
+ <div class="item-m"><span>${esc(notes(i))}</span></div></div>`).join('');
+}
+$('list').onclick=e=>{const b=e.target.closest('[data-del]');if(!b)return;const it=hist.find(i=>i.id==b.dataset.del);
+ if(it&&confirm(`Delete the entry for ${it.name}?`)){hist=hist.filter(i=>i.id!=it.id);store();render();toast('Entry deleted')}};
+$('clear').onclick=()=>{if(confirm('Delete ALL saved entries from this device? This cannot be undone.')){hist=[];store();setF('all');toast('All entries cleared')}};
+function setF(f){filter=f;if(f!=='date'){day='';$('date').value=''}document.querySelectorAll('.pill').forEach(p=>p.classList.toggle('active',p.dataset.f===f));render()}
+document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>setF(p.dataset.f));
+$('date').onchange=e=>{day=e.target.value;if(day){filter='date';document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));render()}else setF('all')};
+$('q').oninput=e=>{qs=e.target.value.trim().toLowerCase();render()};
+
+/* Share & CSV */
+function summary(){const f=filtered();let c=0,o=0,g=0,s=0;
+ const lines=f.map((i,n)=>{c+=i.cashTotal;o+=i.onlineTotal;g+=i.grandTotal;s+=shortOf(i);return `${n+1}. ${i.name} — ${fmt(i.grandTotal)} (Cash ${fmt(i.cashTotal)}, Online ${fmt(i.onlineTotal)}${shortOf(i)?`, Short ${fmt(shortOf(i))}`:''})`});
+ const lbl=filter==='all'?'All entries':filter==='date'?day:filter[0].toUpperCase()+filter.slice(1)+' ('+(filter==='today'?iso():day||'')+')';
+ return ['COD CASH SUMMARY','Filter: '+(filter==='yesterday'?'Yesterday':lbl),'Entries: '+f.length,'-----------------',`Cash: ${fmt(r2(c))}`,`Online: ${fmt(r2(o))}`,s>0?`Short: ${fmt(r2(s))}`:null,`GRAND TOTAL: ${fmt(r2(g))}`,'-----------------',...lines].filter(Boolean).join('\n')}
+$('share').onclick=async()=>{if(!filtered().length)return toast('No entries to share');const t=summary();
+ try{if(navigator.share)await navigator.share({title:'COD Cash Summary',text:t});else{await navigator.clipboard.writeText(t);toast('Summary copied')}}catch(e){if(e.name!=='AbortError')toast('Could not share. Try again')}};
+$('csv').onclick=()=>{const f=filtered();if(!f.length)return toast('No entries to export');
+ const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+ const rows=[['Date & time','Client','To collect','Cash','Online','Received','Short','Notes'].join(',')];let t=[0,0,0,0,0];
+ f.forEach(i=>{const s=shortOf(i);[i.billTotal,i.cashTotal,i.onlineTotal,i.grandTotal,s].forEach((v,k)=>t[k]+=v);
+  rows.push([q(i.timestamp),q(i.name),i.billTotal,i.cashTotal,i.onlineTotal,i.grandTotal,s,q(notes(i))].join(','))});
+ rows.push(['','TOTAL',...t.map(r2),''].join(','));
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+rows.join('\n')],{type:'text/csv;charset=utf-8'}));a.download=`COD_Entries_${iso()}.csv`;
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),500);toast(`Exported ${f.length} entries`)};
+
+/* Calculator */
+const ci=$('ci');
+function ev(raw){let e=raw.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/,/g,'').replace(/[^0-9+\-*/.%() ]/g,'').trim().replace(/[+\-*/.]+$/,'');
+ if(!e)return null;e=e.replace(/(\d+(?:\.\d+)?)%/g,'($1/100)');if(!/^[0-9+\-*/.() ]+$/.test(e))return null;
+ try{const r=Function('"use strict";return('+e+')')();return isFinite(r)?Math.round(r*1e6)/1e6:null}catch(x){return null}}
+function live(){const r=ev(ci.value);$('live').textContent=r!==null&&/[+\-×÷*/%]/.test(ci.value)?'= '+r.toLocaleString('en-IN'):''}
+ci.addEventListener('input',()=>{ci.value=ci.value.replace(/\*/g,'×').replace(/\//g,'÷').replace(/[^0-9+\-×÷.%() ]/g,'');live()});
+ci.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='='){e.preventDefault();key('=')}else if(e.key==='Escape')key('C')});
+function key(k){const v=ci.value;
+ if(k==='C'){ci.value='';$('hist').textContent='';$('live').textContent=''}
+ else if(k==='B')ci.value=v.slice(0,-1);
+ else if(k==='='){const r=ev(v);if(!v.trim())return;if(r===null)$('live').textContent='Check the expression';else{$('hist').textContent=v+' =';ci.value=r;$('live').textContent=''}return}
+ else if(k==='%'||k==='√'){const r=ev(v);if(r!==null&&(k==='%'||r>=0)){$('hist').textContent=k==='%'?v+'%':`√(${v})`;ci.value=Math.round((k==='%'?r/100:Math.sqrt(r))*1e6)/1e6}}
+ else if('+-×÷'.includes(k)){if(!v&&k!=='-')return;ci.value=v.replace(/[+\-×÷]+$/,'')+k}
+ else ci.value+=k;
+ live();ci.focus()}
+document.querySelector('.keys').onclick=e=>{const b=e.target.closest('button');if(b)key(b.dataset.k)};
+function useCalc(id,label){const r=ev(ci.value);if(r===null||r<0)return toast('Calculate a valid positive amount first');
+ $(id).value=r;$(id).dispatchEvent(new Event('input'));toast(`${fmt(r)} added as ${label}`);setTab('count')}
+$('toOnline').onclick=()=>useCalc('online','online');$('toBill').onclick=()=>useCalc('bill','bill');
+
+/* Tabs (mobile) */
+function setTab(t){document.body.dataset.tab=t;document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));scrollTo(0,0)}
+document.querySelector('nav').onclick=e=>{const b=e.target.closest('button');if(b)setTab(b.dataset.t)};
+
+/* PWA */
+let deferred=null;
+function icon(s){const c=document.createElement('canvas');c.width=c.height=s;const x=c.getContext('2d');x.fillStyle='#0b3b2c';x.beginPath();x.roundRect(0,0,s,s,s*.22);x.fill();
+ x.fillStyle='#fff';x.font=`800 ${s*.55}px system-ui,sans-serif`;x.textAlign='center';x.textBaseline='middle';x.fillText('₹',s/2,s*.54);return c.toDataURL('image/png')}
+function pwa(){try{const a=icon(192),b=icon(512);$('touch-icon').href=a;$('favicon').href=a;
+ const m={name:'COD Cash Counter',short_name:'COD Counter',start_url:location.href.split('#')[0],display:'standalone',background_color:'#e9eeeb',theme_color:'#0b3b2c',icons:[{src:a,sizes:'192x192',type:'image/png'},{src:b,sizes:'512x512',type:'image/png'}]};
+ $('manifest').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/manifest+json'}))}catch(e){}
+ if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+ if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)$('install').classList.add('hidden')}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('install').classList.remove('hidden')});
+addEventListener('appinstalled',()=>{$('install').classList.add('hidden');toast('App installed')});
+$('install').onclick=async()=>{if(deferred){deferred.prompt();await deferred.userChoice;deferred=null;$('install').classList.add('hidden')}else toast('Use your browser menu: Add to Home Screen')};
+
+buildRows();load();calc();pwa();
+</script>
 </body>
 </html>
