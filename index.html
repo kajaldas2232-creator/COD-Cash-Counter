@@ -320,7 +320,7 @@ addEventListener('appinstalled',()=>{$('install').classList.add('hidden');toast(
 $('install').onclick=async()=>{if(deferred){deferred.prompt();await deferred.userChoice;deferred=null;$('install').classList.add('hidden')}else toast('Use your browser menu: Add to Home Screen')};
 
 /* Cloud sync (Supabase) */
-const SB_URL='',SB_KEY='vxqqvjxeszfkzzacolxq'; /* paste your Project URL and anon/publishable key here */
+const SB_URL='https://vxqqvjxeszfkzzacolxq.supabase.co',SB_KEY='eyJ...your key...'; /* paste your Project URL and anon/publishable key here */
 const SES='codSession_v1',cfg=()=>!!(SB_URL&&SB_KEY);
 let ses=null,syncing=false,last=null,pd=[];
 try{ses=JSON.parse(localStorage.getItem(SES))}catch(e){}
