@@ -227,8 +227,13 @@ function clearForm(quiet){
  calc();if(!quiet)toast('Form cleared')}
 $('denoms').addEventListener('input',e=>{if(e.target.dataset.d)setQty(+e.target.dataset.d,e.target.value)});
 $('denoms').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setQty(+b.dataset.d,counts[b.dataset.d]+ +b.dataset.s)});
-$('denoms').addEventListener('keydown',e=>{if(!e.target.dataset.d||!['Enter','ArrowDown','ArrowUp'].includes(e.key))return;e.preventDefault();
- const n=D.indexOf(+e.target.dataset.d)+(e.key==='ArrowUp'?-1:1);const t=n<0?$('bill'):n>=D.length?$('online'):$('i'+D[n]);t.focus();t.select()});
+/* Keyboard: ↓ / Enter go to the next field (name, bill, 500 … 1, online, Save), ↑ goes back */
+const order=()=>['name','bill',...D.map(d=>'i'+d),'online'];
+document.addEventListener('keydown',e=>{const o=order(),k=o.indexOf(e.target.id);
+ if(k<0||!['ArrowDown','ArrowUp','Enter'].includes(e.key))return;
+ e.preventDefault();const n=k+(e.key==='ArrowUp'?-1:1);
+ if(n<0)return;if(n>=o.length){$('save').focus();return}
+ const t=$(o[n]);t.focus();if(t.select)t.select()});
 $('bill').addEventListener('input',e=>{bill=Math.max(0,parseFloat(e.target.value)||0);calc()});
 $('online').addEventListener('input',e=>{online=Math.max(0,parseFloat(e.target.value)||0);calc()});
 $('name').addEventListener('input',e=>e.target.classList.remove('err'));
@@ -295,15 +300,22 @@ function ev(raw){let e=raw.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,
  try{const r=Function('"use strict";return('+e+')')();return isFinite(r)?Math.round(r*1e6)/1e6:null}catch(x){return null}}
 function live(){const r=ev(ci.value);$('live').textContent=r!==null&&/[+\-×÷*/%]/.test(ci.value)?'= '+r.toLocaleString('en-IN'):''}
 ci.addEventListener('input',()=>{ci.value=ci.value.replace(/\*/g,'×').replace(/\//g,'÷').replace(/[^0-9+\-×÷.%() ]/g,'');live()});
-ci.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='='){e.preventDefault();key('=')}else if(e.key==='Escape')key('C')});
+const desk=()=>{if(matchMedia('(hover:hover)').matches)ci.focus()};
+/* Keyboard on PC: Enter or = gives the result (also after clicking a keypad button); Esc clears */
+document.querySelector('[data-pane=calc]').addEventListener('keydown',e=>{const t=e.target,inCalc=t===ci||t.closest('.keys');
+ if(!inCalc)return;
+ if(e.key==='Enter'||e.key==='='){e.preventDefault();key('=');return}
+ if(e.key==='Escape'){e.preventDefault();key('C');return}
+ if(t!==ci&&e.key==='Backspace'){e.preventDefault();key('B');return}
+ if(t!==ci&&/^[0-9.+\-*\/%]$/.test(e.key)){e.preventDefault();key(e.key==='*'?'×':e.key==='/'?'÷':e.key)}});
 function key(k){const v=ci.value;
  if(k==='C'){ci.value='';$('hist').textContent='';$('live').textContent=''}
  else if(k==='B')ci.value=v.slice(0,-1);
- else if(k==='='){const r=ev(v);if(!v.trim())return;if(r===null)$('live').textContent='Check the expression';else{$('hist').textContent=v+' =';ci.value=r;$('live').textContent=''}return}
+ else if(k==='='){const r=ev(v);if(!v.trim())return;if(r===null)$('live').textContent='Check the expression';else{$('hist').textContent=v+' =';ci.value=r;$('live').textContent=''}desk();return}
  else if(k==='%'||k==='√'){const r=ev(v);if(r!==null&&(k==='%'||r>=0)){$('hist').textContent=k==='%'?v+'%':`√(${v})`;ci.value=Math.round((k==='%'?r/100:Math.sqrt(r))*1e6)/1e6}}
  else if('+-×÷'.includes(k)){if(!v&&k!=='-')return;ci.value=v.replace(/[+\-×÷]+$/,'')+k}
  else ci.value+=k;
- live();ci.focus()}
+ live();desk()}
 document.querySelector('.keys').onclick=e=>{const b=e.target.closest('button');if(b)key(b.dataset.k)};
 function useCalc(id,label){const r=ev(ci.value);if(r===null||r<0)return toast('Calculate a valid positive amount first');
  $(id).value=r;$(id).dispatchEvent(new Event('input'));toast(`${fmt(r)} added as ${label}`);setTab('count')}
