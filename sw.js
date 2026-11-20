@@ -1,4 +1,4 @@
-const CACHE = 'cod-counter-v4';
+const CACHE = 'cod-counter-v5';
 const ASSETS = ['./', './index.html'];
 
 self.addEventListener('install', e => {

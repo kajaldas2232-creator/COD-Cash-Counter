@@ -126,8 +126,8 @@ dialog::backdrop{background:rgba(8,20,15,.55)}dialog h2{font-size:1.1rem;margin-
 </head>
 <body data-tab="count">
 <header><div class="bar">
- <div class="brand"><div class="logo">₹</div>COD Cash Counter</div>
- <div class="tools"><button class="hbtn" id="acct">Sync</button><button class="hbtn solid" id="install">Install</button><button class="hbtn" id="reset">Clear</button></div>
+ <div class="brand"><div class="logo">₹</div>COD Cash Counter <small style="opacity:.65;font-weight:600;font-size:.7rem">v13</small></div>
+ <div class="tools"><button class="hbtn" id="acct" aria-live="polite">☁ Sync</button><button class="hbtn solid" id="install">Install</button><button class="hbtn" id="reset">Clear</button></div>
 </div></header>
 
 <main>
@@ -182,16 +182,6 @@ dialog::backdrop{background:rgba(8,20,15,.55)}dialog h2{font-size:1.1rem;margin-
  <button role="tab" data-t="history" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Entries</button>
  <button role="tab" data-t="calc" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 12h.01M12 12h.01M15 12h.01M9 16h.01M12 16h.01M15 16h.01"/></svg>Calc</button>
 </nav>
-<dialog id="dlg" aria-labelledby="dT"><h2 id="dT">Sync across devices</h2>
- <div id="dOff" class="hidden"><p>Cloud sync is not set up yet. Add your Supabase URL and key at the top of the script in index.html.</p></div>
- <div id="dOut"><p>Sign in on each device with the same account to see the same entries everywhere.</p>
-  <input class="in" id="dEmail" type="email" autocomplete="email" placeholder="Email" aria-label="Email">
-  <input class="in" id="dPass" type="password" autocomplete="current-password" placeholder="Password (min 6 characters)" aria-label="Password">
-  <div id="dErr" role="alert"></div>
-  <div class="dbtn"><button type="button" class="p" id="dIn1">Sign in</button><button type="button" id="dUp">Create account</button></div></div>
- <div id="dIn" class="hidden"><p id="dWho"></p><p id="dStat"></p>
-  <div class="dbtn"><button type="button" class="p" id="dSync">Sync now</button><button type="button" id="dOut1">Sign out</button></div></div>
- <div class="dbtn"><button type="button" id="dClose">Close</button></div></dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -227,13 +217,7 @@ function clearForm(quiet){
  calc();if(!quiet)toast('Form cleared')}
 $('denoms').addEventListener('input',e=>{if(e.target.dataset.d)setQty(+e.target.dataset.d,e.target.value)});
 $('denoms').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setQty(+b.dataset.d,counts[b.dataset.d]+ +b.dataset.s)});
-/* Keyboard: ↓ / Enter go to the next field (name, bill, 500 … 1, online, Save), ↑ goes back */
-const order=()=>['name','bill',...D.map(d=>'i'+d),'online'];
-document.addEventListener('keydown',e=>{const o=order(),k=o.indexOf(e.target.id);
- if(k<0||!['ArrowDown','ArrowUp','Enter'].includes(e.key))return;
- e.preventDefault();const n=k+(e.key==='ArrowUp'?-1:1);
- if(n<0)return;if(n>=o.length){$('save').focus();return}
- const t=$(o[n]);t.focus();if(t.select)t.select()});
+
 $('bill').addEventListener('input',e=>{bill=Math.max(0,parseFloat(e.target.value)||0);calc()});
 $('online').addEventListener('input',e=>{online=Math.max(0,parseFloat(e.target.value)||0);calc()});
 $('name').addEventListener('input',e=>e.target.classList.remove('err'));
@@ -301,13 +285,7 @@ function ev(raw){let e=raw.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,
 function live(){const r=ev(ci.value);$('live').textContent=r!==null&&/[+\-×÷*/%]/.test(ci.value)?'= '+r.toLocaleString('en-IN'):''}
 ci.addEventListener('input',()=>{ci.value=ci.value.replace(/\*/g,'×').replace(/\//g,'÷').replace(/[^0-9+\-×÷.%() ]/g,'');live()});
 const desk=()=>{if(matchMedia('(hover:hover)').matches)ci.focus()};
-/* Keyboard on PC: Enter or = gives the result (also after clicking a keypad button); Esc clears */
-document.querySelector('[data-pane=calc]').addEventListener('keydown',e=>{const t=e.target,inCalc=t===ci||t.closest('.keys');
- if(!inCalc)return;
- if(e.key==='Enter'||e.key==='='){e.preventDefault();key('=');return}
- if(e.key==='Escape'){e.preventDefault();key('C');return}
- if(t!==ci&&e.key==='Backspace'){e.preventDefault();key('B');return}
- if(t!==ci&&/^[0-9.+\-*\/%]$/.test(e.key)){e.preventDefault();key(e.key==='*'?'×':e.key==='/'?'÷':e.key)}});
+
 function key(k){const v=ci.value;
  if(k==='C'){ci.value='';$('hist').textContent='';$('live').textContent=''}
  else if(k==='B')ci.value=v.slice(0,-1);
@@ -320,6 +298,19 @@ document.querySelector('.keys').onclick=e=>{const b=e.target.closest('button');i
 function useCalc(id,label){const r=ev(ci.value);if(r===null||r<0)return toast('Calculate a valid positive amount first');
  $(id).value=r;$(id).dispatchEvent(new Event('input'));toast(`${fmt(r)} added as ${label}`);setTab('count')}
 $('toOnline').onclick=()=>useCalc('online','online');$('toBill').onclick=()=>useCalc('bill','bill');
+
+/* Keyboard (PC). Runs first, so the browser's own number-spinner never gets the arrow keys */
+const order=()=>['name','bill',...D.map(d=>'i'+d),'online'];
+window.addEventListener('keydown',e=>{const t=e.target,k=order().indexOf(t.id);
+ if(k>=0&&(e.key==='ArrowDown'||e.key==='ArrowUp'||e.key==='Enter')){
+  e.preventDefault();e.stopImmediatePropagation();const n=k+(e.key==='ArrowUp'?-1:1);
+  if(n<0)return;if(n>=order().length){$('save').focus();return}
+  const f=$(order()[n]);f.focus();if(f.select)f.select();return}
+ if(t===ci||(t.closest&&t.closest('.keys'))){
+  if(e.key==='Enter'||e.key==='='){e.preventDefault();e.stopImmediatePropagation();key('=');return}
+  if(e.key==='Escape'){e.preventDefault();key('C');return}
+  if(t!==ci&&e.key==='Backspace'){e.preventDefault();key('B');return}
+  if(t!==ci&&/^[0-9.+\-*\/%]$/.test(e.key)){e.preventDefault();key(e.key==='*'?'×':e.key==='/'?'÷':e.key)}}},true);
 
 /* Tabs (mobile) */
 function setTab(t){document.body.dataset.tab=t;document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));scrollTo(0,0)}
@@ -338,57 +329,36 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('inst
 addEventListener('appinstalled',()=>{$('install').classList.add('hidden');toast('App installed')});
 $('install').onclick=async()=>{if(deferred){deferred.prompt();await deferred.userChoice;deferred=null;$('install').classList.add('hidden')}else toast('Use your browser menu: Add to Home Screen')};
 
-/* Cloud sync (Supabase) */
-const SB_URL='https://vxqqvjxeszfkzzacolxq.supabase.co',SB_KEY='sb_publishable_w_hE0TJ0nq3TkSlMvLs6Fg_l77HTklO'; /* paste your Project URL and anon/publishable key here */
-const SES='codSession_v1',cfg=()=>!!(SB_URL&&SB_KEY);
-let ses=null,syncing=false,last=null,pd=[];
-try{ses=JSON.parse(localStorage.getItem(SES))}catch(e){}
+/* Cloud sync (Supabase, no login): every device with this site shares the same entries */
+const SB_URL='https://vxqqvjxeszfkzzacolxq.supabase.co',SB_KEY='sb_publishable_w_hE0TJ0nq3TkSlMvLs6Fg_l77HTklO',TB='cod_shared';
+let syncing=false,last=null,pd=[];
 try{pd=JSON.parse(localStorage.getItem('codPD'))||[]}catch(e){}
 const spd=()=>{try{localStorage.setItem('codPD',JSON.stringify(pd))}catch(e){}};
-function saveSes(x){ses=x;try{x?localStorage.setItem(SES,JSON.stringify(x)):localStorage.removeItem(SES)}catch(e){}
- if(!x){hist.forEach(i=>delete i.synced);store()}ui()}
-const mk=d=>({access_token:d.access_token,refresh_token:d.refresh_token,expires_at:Date.now()+(d.expires_in||3600)*1000,user:{id:d.user.id,email:d.user.email}});
-async function auth(path,body){const r=await fetch(`${SB_URL}/auth/v1/${path}`,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
- const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.msg||d.error_description||d.message||'Request failed');return d}
-async function fresh(){if(!ses)return null;if(ses.expires_at-Date.now()>60000)return ses.access_token;
- try{saveSes(mk(await auth('token?grant_type=refresh_token',{refresh_token:ses.refresh_token})));return ses.access_token}
- catch(e){if(navigator.onLine&&/invalid|expired|not found/i.test(e.message)){saveSes(null);toast('Session expired. Sign in again to sync')}return null}}
-async function db(path,opt={}){const t=await fresh();if(!t)throw new Error('no session');
- const r=await fetch(`${SB_URL}/rest/v1/${path}`,{...opt,headers:{apikey:SB_KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...opt.headers}});
- if(!r.ok)throw new Error('db '+r.status);return r.status===204?null:r.json().catch(()=>null)}
+async function db(path,opt={}){const h={apikey:SB_KEY,'Content-Type':'application/json',...opt.headers};if(SB_KEY.startsWith('eyJ'))h.Authorization='Bearer '+SB_KEY;
+ const r=await fetch(`${SB_URL}/rest/v1/${path}`,{...opt,headers:h});if(!r.ok)throw new Error('db '+r.status);return r.status===204?null:r.json().catch(()=>null)}
 const toRow=i=>({id:String(i.id),date_iso:i.dateISO||'',timestamp_text:i.timestamp||'',client_name:i.name||'',bill_total:i.billTotal||0,cash_total:i.cashTotal||0,online_total:i.onlineTotal||0,grand_total:i.grandTotal||0,breakdown:i.breakdown||{}});
 const fromRow=r=>({id:Number(r.id),dateISO:r.date_iso,timestamp:r.timestamp_text,name:r.client_name,billTotal:+r.bill_total,cashTotal:+r.cash_total,onlineTotal:+r.online_total,grandTotal:+r.grand_total,breakdown:r.breakdown||{},synced:true});
-async function push(i){if(!ses||!i)return;try{await db('cod_entries?on_conflict=user_id,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(toRow(i))});i.synced=true;store()}catch(e){}}
-function rmCloud(ids){if(!ses)return;pd.push(...ids.map(String));spd();flushPD()}
-async function flushPD(){if(!ses)return;while(pd.length){const c=pd.slice(0,50);
- try{await db(`cod_entries?id=in.(${c.map(encodeURIComponent).join(',')})`,{method:'DELETE'});pd=pd.filter(x=>!c.includes(x));spd()}catch(e){return}}}
-async function sync(manual){if(!ses||syncing)return;syncing=true;ui('Syncing…');
- try{await flushPD();const rows=await db('cod_entries?select=*&order=id.desc&limit=1000');if(!Array.isArray(rows))throw 0;
+async function push(i){if(!i)return;try{await db(`${TB}?on_conflict=id`,{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(toRow(i))});i.synced=true;store()}catch(e){}}
+function rmCloud(ids){pd.push(...ids.map(String));spd();flushPD()}
+async function flushPD(){while(pd.length){const c=pd.slice(0,50);
+ try{await db(`${TB}?id=in.(${c.map(encodeURIComponent).join(',')})`,{method:'DELETE'});pd=pd.filter(x=>!c.includes(x));spd()}catch(e){return}}}
+function ui(msg){const b=$('acct');b.textContent=msg||'☁ Synced';b.title=last?'Last synced '+last.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+'. Tap to sync now':'Tap to sync now'}
+async function sync(manual){if(syncing)return;syncing=true;ui('☁ Syncing…');
+ try{await flushPD();const rows=await db(`${TB}?select=*&order=id.desc&limit=1000`);if(!Array.isArray(rows))throw 0;
   const gone=new Set(pd),m=new Map();rows.map(fromRow).filter(c=>!gone.has(String(c.id))).forEach(c=>m.set(String(c.id),c));
   hist.filter(i=>!i.synced).forEach(i=>m.set(String(i.id),i));
   hist=[...m.values()].sort((a,b)=>b.id-a.id);store();render();
   for(const i of hist.filter(i=>!i.synced))await push(i);
   last=new Date();ui();if(manual)toast('Synced')}
- catch(e){ui('Offline. Will sync when you are back online');if(manual)toast('Could not sync. Check your connection')}
+ catch(e){ui('⚠ Offline');if(manual)toast('Could not sync. Check internet and the cod_shared table')}
  syncing=false}
-function ui(msg){$('acct').textContent=ses?'● '+ses.user.email.split('@')[0].slice(0,10):'Sync';
- $('dOff').classList.toggle('hidden',cfg());$('dOut').classList.toggle('hidden',!!ses||!cfg());$('dIn').classList.toggle('hidden',!ses);
- if(ses){$('dWho').textContent='Signed in as '+ses.user.email;$('dStat').textContent=msg||(last?'Last synced '+last.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'Not synced yet')}}
-async function login(up){const email=$('dEmail').value.trim(),password=$('dPass').value,er=$('dErr');er.textContent='';
- if(!email||password.length<6){er.textContent='Enter your email and a password of at least 6 characters.';return}
- try{let d=await auth(up?'signup':'token?grant_type=password',{email,password});
-  if(!d.access_token){er.textContent='Account created. Confirm the email we sent, then tap Sign in.';return}
-  saveSes(mk(d));$('dPass').value='';$('dlg').close();toast('Signed in');sync(true)}
- catch(e){er.textContent=/invalid login/i.test(e.message)?'Wrong email or password.':e.message}}
-$('acct').onclick=()=>{ui();$('dlg').showModal()};
-$('dClose').onclick=()=>$('dlg').close();$('dIn1').onclick=()=>login(false);$('dUp').onclick=()=>login(true);
-$('dSync').onclick=()=>sync(true);$('dOut1').onclick=()=>{saveSes(null);$('dlg').close();toast('Signed out. Entries stay on this device')};
-$('dPass').addEventListener('keydown',e=>{if(e.key==='Enter')login(false)});
+$('acct').onclick=()=>sync(true);
 addEventListener('online',()=>sync());
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&ses&&(!last||Date.now()-last>30000))sync()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});
+setInterval(()=>{if(!document.hidden)sync()},30000);
 
 document.addEventListener('wheel',()=>{const a=document.activeElement;if(a&&a.type==='number')a.blur()},{passive:true});
-buildRows();load();calc();pwa();ui();sync();
+buildRows();load();calc();pwa();sync();
 </script>
 </body>
 </html>
